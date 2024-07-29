@@ -1,0 +1,10 @@
+version = 1
+SPDX-PackageName = "OCM Gear"
+SPDX-PackageSupplier = "Jonas Brand <j.brand@sap.com>"
+SPDX-PackageDownloadLocation = "https://github.com/open-component-model/ocm-gear"
+
+[[annotations]]
+path = "**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = ["2024 SAP SE or an SAP affiliate company and Open Component Model contributors \\", "<j.brand@sap.com>"]
+SPDX-License-Identifier = "Apache-2.0"
