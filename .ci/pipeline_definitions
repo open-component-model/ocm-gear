@@ -1,0 +1,55 @@
+ocm-gear:
+  base_definition:
+    traits:
+      version: ~
+      component_descriptor:
+        component_name: ocm.software/ocm-gear
+        ocm_repository: europe-docker.pkg.dev/gardener-project/releases
+        ocm_repository_mappings:
+          - repository: europe-docker.pkg.dev/gardener-project/releases
+            prefix: ''
+
+  jobs:
+    update-dependencies:
+      traits:
+        update_component_deps:
+          merge_policy: auto_merge
+        cronjob:
+          interval: 5m
+        component_descriptor:
+          ocm_repository: europe-docker.pkg.dev/gardener-project/snapshots
+
+    head-update:
+      steps:
+        lint:
+          execute: lint
+      traits:
+        component_descriptor:
+          ocm_repository: europe-docker.pkg.dev/gardener-project/snapshots
+
+    automatic-release:
+      steps:
+        trigger-release:
+          execute: trigger_release.py
+          inputs:
+            component_descriptor_dir: component_descriptor_dir
+          vars:
+            RELEASE_JOB_NAME: pipeline.variant("manual-release").job_name()
+            PIPELINE_NAME: pipeline_descriptor.get("name")
+          depends:
+            - component_descriptor
+      traits:
+        component_descriptor:
+          ocm_repository: europe-docker.pkg.dev/gardener-project/snapshots
+
+    manual-release:
+      steps:
+        lint:
+          execute: lint
+      traits:
+        version:
+          preprocess: finalize
+          inject_effective_version: True
+        release:
+          nextversion: bump_minor
+          release_notes_policy: disabled
