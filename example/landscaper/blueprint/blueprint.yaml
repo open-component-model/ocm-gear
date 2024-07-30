@@ -1,0 +1,107 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: Blueprint
+
+imports:
+- name: cluster
+  type: target
+  targetType: landscaper.gardener.cloud/kubernetes-cluster
+- name: namespace
+  type: data
+  schema:
+    type: string
+- name: deliveryServiceHelmValues
+  type: data
+  schema:
+    $ref: "blueprint://delivery-service-type.json"
+- name: deliveryDashboardHelmValues
+  type: data
+  schema:
+    $ref: "blueprint://delivery-dashboard-type.json"
+- name: deliveryDbHelmValues
+  type: data
+  required: False
+  schema:
+    $ref: "blueprint://delivery-db-type.json"
+- name: extensionsHelmValues
+  type: data
+  required: False
+  schema:
+    $ref: "blueprint://extensions-type.json"
+
+deployExecutions:
+- name: delivery-service
+  type: GoTemplate
+  template: |
+    deployItems:
+    - name: deploy-delivery-service
+      type: landscaper.gardener.cloud/helm
+      target:
+        import: cluster
+      config:
+        apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+        kind: ProviderConfiguration
+        chart:
+          ref: {{ with (getResource .cd "name" "delivery-service-chart") }} {{ .access.imageReference }} {{ end }}
+        updateStrategy: patch
+        name: delivery-service
+        namespace: {{ .imports.namespace }}
+        values:
+        {{ toYaml .imports.deliveryServiceHelmValues | nindent 10 }}
+- name: delivery-dashboard
+  type: GoTemplate
+  template: |
+    deployItems:
+    - name: deploy-delivery-dashboard
+      type: landscaper.gardener.cloud/helm
+      target:
+        import: cluster
+      config:
+        apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+        kind: ProviderConfiguration
+        chart:
+          ref: {{ with (getResource .cd "name" "delivery-dashboard-chart") }} {{ .access.imageReference }} {{ end }}
+        updateStrategy: patch
+        name: delivery-dashboard
+        namespace: {{ .imports.namespace }}
+        values:
+        {{ toYaml .imports.deliveryDashboardHelmValues | nindent 10 }}
+- name: delivery-db
+  type: GoTemplate
+  template: |
+    deployItems:
+    {{ if .imports.deliveryDbHelmValues }}
+    - name: deploy-delivery-db
+      type: landscaper.gardener.cloud/helm
+      target:
+        import: cluster
+      config:
+        apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+        kind: ProviderConfiguration
+        chart:
+          ref: europe-docker.pkg.dev/gardener-project/releases/delivery-gear/delivery-charts/postgresql:10.12.4
+        updateStrategy: patch
+        name: delivery-db
+        namespace: {{ .imports.namespace }}
+        values:
+        {{ toYaml .imports.deliveryDbHelmValues | nindent 10 }}
+    {{ end }}
+- name: delivery-gear-extensions
+  type: GoTemplate
+  template: |
+    deployItems:
+    {{ if .imports.extensionsHelmValues }}
+    - name: extensions
+      type: landscaper.gardener.cloud/helm
+      target:
+        import: cluster
+      config:
+        apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
+        kind: ProviderConfiguration
+        chart:
+          ref: {{ with (getResource .cd "name" "extensions-chart") }} {{ .access.imageReference }} {{ end }}
+        updateStrategy: patch
+        name: delivery-gear-extensions
+        namespace: {{ .imports.namespace }}
+        values:
+        {{ toYaml .imports.extensionsHelmValues | nindent 10 }}
+    {{ end }}

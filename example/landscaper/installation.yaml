@@ -1,0 +1,48 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: Installation
+metadata:
+  name: installation-ocm-gear
+  namespace: ls
+  annotations:
+    landscaper.gardener.cloud/operation: reconcile
+spec:
+  componentDescriptor:
+    ref:
+      componentName: my-component-containing-blueprint
+      version: ...
+      repositoryContext:
+        baseUrl: ...
+        type: ociRegistry
+  blueprint:
+    ref:
+      resourceName: my-blueprint-name
+  imports:
+    data:
+      - name: namespace
+        secretRef:
+          key: namespace
+          name: import-namespace
+          namespace: ls
+      - name: deliveryServiceHelmValues
+        secretRef:
+          key: deliveryServiceHelmValues
+          name: import-delivery-service
+          namespace: ls
+      - name: deliveryDashboardHelmValues
+        secretRef:
+          key: deliveryDashboardHelmValues
+          name: import-delivery-dashboard
+          namespace: ls
+      - name: deliveryDbHelmValues
+        secretRef:
+          key: deliveryDbHelmValues
+          name: import-delivery-db
+          namespace: ls
+      - name: extensionsHelmValues
+        secretRef:
+          key: extensionsHelmValues
+          name: import-extensions
+          namespace: ls
+    targets:
+      - name: cluster
+        target: target-ocm-gear

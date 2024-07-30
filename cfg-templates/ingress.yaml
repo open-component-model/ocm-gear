@@ -1,0 +1,14 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # ttl
+  ttl: 60
+
+  # issuer_name
+  issuer_name: ...
+
+  # tls_host_names
+  # list of hostnames tls should be configured for
+  tls_host_names:
+  - ...

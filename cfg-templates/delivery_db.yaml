@@ -1,0 +1,36 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # credentials
+  # used to log into the database
+  credentials:
+    username: postgres
+    # password must match following regular expression: ^(?=.*[a-z])(?=.*[A-Z]).{11,}$
+    password: ...
+
+  # hostname
+  # hostname under which the database can be accessed
+  hostname: delivery-db.delivery.svc.cluster.local
+
+  # port
+  # port number under which the database can be accessed
+  port: 5432
+
+  # db_type
+  # used to determine postgres driver (other drivers must be installed manually!)
+  db_type: postgresql+psycopg
+
+  # helm_values
+  # required for the installation of the helm postgres database
+  helm_values:
+
+    # fullnameOverride
+    # name of the helm chart installation
+    fullnameOverride: delivery-db
+
+    # image.tag
+    # referenced image version of the postgres database
+    # check tags at: https://hub.docker.com/r/bitnami/postgresql/tags
+    image:
+      tag: 16.0.0

@@ -1,0 +1,16 @@
+# OPTIONAL
+# used for bdba scans of delivery-gear-extensions if s3-client is required
+# usage requires:
+# - removal of comment for entry "delivery_service.aws" in "configs.yaml"
+
+internal:
+
+  # region
+  # region the aws secret belongs to
+  region: ...
+
+  # access_key_id
+  access_key_id: ...
+
+  # secret_access_key
+  secret_access_key: ...

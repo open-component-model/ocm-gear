@@ -1,0 +1,37 @@
+{
+    "type": "object",
+    "properties": {
+        "envVars": {
+            "type": "object",
+            "properties": {
+                "REACT_APP_DELIVERY_SERVICE_API_URL": { "type": "string" }
+            },
+            "required": ["REACT_APP_DELIVERY_SERVICE_API_URL"]
+        },
+        "pod": {
+            "type": "object",
+            "properties": {
+                "annotations": { "type": "object" },
+                "labels": { "type": "object" }
+            }
+        },
+        "ingress": {
+            "type": "object",
+            "properties": {
+                "annotations": { "type": "object" },
+                "class": { "type": "string" },
+                "hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["hosts"]
+        },
+        "replicas": { "type": "number" },
+        "containerPort": { "type": "number" },
+        "servicePort": { "type": "number" }
+    },
+    "required": ["ingress"]
+}

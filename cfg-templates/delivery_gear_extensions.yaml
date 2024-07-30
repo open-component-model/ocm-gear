@@ -1,0 +1,406 @@
+# OPTIONAL
+# used for bdba scans and issue-replicator, new extensions will follow
+# usage requires:
+# - removal of comment for entry "ocm_gear.delivery_gear_extensions" in "configs.yaml"
+
+internal:
+
+  # defaults
+  # general configuration which is used by all extensions if no extension-specific configuration is supplied
+  defaults:
+
+    # delivery_service_url
+    # url under which the delivery-service can be accessed
+    # cluster internal url is sufficient
+    delivery_service_url: ...
+
+    # delivery_dashboard_url (optional)
+    # url under which the delivery-dashboard can be accessed
+    # cluster internal url is not sufficient because it's used as link on tickets
+    delivery_dashboard_url: ~
+
+    # lookup_new_backlog_item_interval (optional) (number)
+    # time (in sec) to wait in case no backlog item was found before searching for new backlog item again
+    lookup_new_backlog_item_interval: 60
+
+    # artefact_types (optional)
+    # list of artefact types for which the scanning tools should be instrumented
+    artefact_types:
+      - ociImage
+      - application/tar+vm-image-rootfs
+
+    # matching_configs (optional)
+    # list of configs to filter artefacts (resources, sources) for which the scanning tools should be instrumented
+    matching_configs:
+        # name
+        # name of the filter
+      - name: ...
+        # rules
+        # list of rules that should be applied for this filter
+        rules:
+            # target
+            # e.g. "component.name", "resource.extraIdentity.platform"
+          - target: ...
+            # expression
+            # regular expression
+            expression: ...
+            # matching_semantics
+            # selection of {"include", "exclude"}
+            matching_semantics: ...
+
+    # cve_rescoring_rules (optional)
+    # rescoring rules are used for auto rescoring in bdba and proposed rescorings in issue-replicator
+    cve_rescoring_rules:
+      - category_value: ...
+        rules:
+          - cve_values:
+              - ...
+            # rescore
+            # selection of {"no-change", "reduce", "not-exploitable"}
+            rescore: ...
+
+    # prohibited_licenses (optional)
+    # list of licenses which are prohibited and should be reported
+    prohibited_licenses: []
+
+  # artefactEnumerator
+  # specific configuration which is only used by the artefact enumerator
+  artefactEnumerator:
+
+    # delivery_service_url
+    # url under which the delivery-service can be accessed
+    # cluster internal url is sufficient
+    delivery_service_url: ...
+
+    # compliance_snapshot_grace_period (optional) (number)
+    # time (in sec) after which inactive compliance snapshots are deleted from the delivery-db
+    compliance_snapshot_grace_period: 86400 # 24h
+
+    # artefact_types (optional)
+    # list of artefact types for which the scanning tools should be instrumented
+    artefact_types:
+      - ociImage
+      - application/tar+vm-image-rootfs
+
+    # matching_configs (optional)
+    # list of configs to filter artefacts (resources, sources) for which the scanning tools should be instrumented
+    matching_configs:
+        # name
+        # name of the filter
+      - name: ...
+        # rules
+        # list of rules that should be applied for this filter
+        rules:
+            # target
+            # e.g. "component.name", "resource.extraIdentity.platform"
+          - target: ...
+            # expression
+            # regular expression
+            expression: ...
+            # matching_semantics
+            # selection of {"include", "exclude"}
+            matching_semantics: ...
+
+    # components
+    # list of components for which the scanning tools should be instrumented
+    components:
+
+        # component_name
+        # name of the component as it is declared in its component descriptor
+      - component_name: ...
+
+        # version (optional)
+        # specifies the version that should be tracked
+        # if not set or set to "greatest", it will always reference the greatest version
+        version: greatest
+
+        # version_filter (optional)
+        # selection of {"all", "releases_only"}
+        # specifies the behaviour which versions should be included when resolving the version
+        # alias "greatest"; if not set it defaults to the global configuration of the delivery-service
+        version_filter: ~
+
+        # max_versions_limit (optional)
+        # number of release versions that should be tracked
+        # if version is set to a constant version, the n greatest versions up to this version will be tracked
+        max_versions_limit: 1
+
+        # ocm_repo (optional)
+        # url of the repository in which this component is stored
+        # if not set, the ocm repo mapping of the delivery-service is used
+        ocm_repo: ~
+
+    # sprints_relative_time_range (optional)
+    # allows to restrict the processed sprints to only the ones in the specified relative time range
+    # negative values correspond to days in the past, positive values to days in the future
+    # if nothing is set, it defaults to "all sprints"
+    sprints_relative_time_range:
+      days_from: ...
+      days_to: ...
+
+  # bdba
+  # specific configuration which is only used by the bdba extensions
+  bdba:
+
+    # delivery_service_url
+    # url under which the delivery-service can be accessed
+    # cluster internal url is sufficient
+    delivery_service_url: ...
+
+    # rescan_interval
+    # time (in sec) after which an artefact must be re-scanned at latest
+    rescan_interval: ...
+
+    # lookup_new_backlog_item_interval (optional)
+    # time (in sec) to wait in case no backlog item was found before searching for new backlog item again
+    lookup_new_backlog_item_interval: 60
+
+    # cfg_name
+    # name of the bdba configuration element that should be used for the scan
+    # corresponding entry in "delivery_service.bdba" in "configs.yaml" is required
+    cfg_name: ...
+
+    # group_id
+    # bdba group id to use for scanning
+    # has to be part of bdba.yaml
+    group_id: ...
+
+    # reference_group_ids (optional)
+    # bdba group ids to consider when copying existing assessments
+    # have to be part of bdba.yaml
+    reference_group_ids: []
+
+    # cvss_version (optional)
+    # specifies the cvss version which is used
+    cvss_version: CVSSv3
+
+    # aws_cfg_set_name (optional)
+    # name of the cfg set which includes the aws config which should be used for the s3-client
+    # aws config is necessary if s3-client is required for scanning
+    aws_cfg_set_name: ~
+
+    # processing_mode (optional)
+    # selection of {"rescan", "force_upload"}
+    # defines the scanning behaviour in case there is already an existing scan
+    processing_mode: rescan
+
+    # artefact_types (optional)
+    # list of artefact types for which the scanning tools should be instrumented
+    artefact_types:
+      - ociImage
+      - application/tar+vm-image-rootfs
+
+    # matching_configs (optional)
+    # list of configs to filter artefacts (resources, sources) for which the scanning tools should be instrumented
+    matching_configs:
+        # name
+        # name of the filter
+      - name: ...
+        # rules
+        # list of rules that should be applied for this filter
+        rules:
+            # target
+            # e.g. "component.name", "resource.extraIdentity.platform"
+          - target: ...
+            # expression
+            # regular expression
+            expression: ...
+            # matching_semantics
+            # selection of {"include", "exclude"}
+            matching_semantics: ...
+
+    # cve_rescoring_rules (optional)
+    # rescoring rules are applied to automatically rescore findings below `auto_assess_max_severity`
+    cve_rescoring_rules:
+      - category_value: ...
+        rules:
+          - cve_values:
+              - ...
+            # rescore
+            # selection of {"no-change", "reduce", "not-exploitable"}
+            rescore: ...
+
+    # auto_assess_max_severity (required if cve_rescoring_rules are set)
+    # selection of {"NONE", "LOW ", "MEDIUM", "HIGH", "CRITICAL"}
+    # only findings below this severity will be automatically rescored
+    auto_assess_max_severity: ...
+
+    # prohibited_licenses (optional)
+    # list of licenses which are prohibited and should be reported
+    prohibited_licenses: []
+
+    # delete_inactive_products_after_seconds (optional)
+    # time (in sec) after which a bdba product is deleted if the scanned artefact is not active anymore
+    # if nothing is set, it defaults to "don't delete bdba products"
+    delete_inactive_products_after_seconds: ~
+
+  # issueReplicator
+  # specific configuration which is only used by the issue-replicator extensions
+  issueReplicator:
+
+    # delivery_service_url
+    # url under which the delivery-service can be accessed
+    # cluster internal url is sufficient
+    delivery_service_url: ...
+
+    # delivery_dashboard_url (optional)
+    # url under which the delivery-dashboard can be accessed
+    # cluster internal url is not sufficient because it's used as link on tickets
+    delivery_dashboard_url: ~
+
+    # replication_interval
+    # time after which an issue must be updated at latest
+    replication_interval: ...
+
+    # lookup_new_backlog_item_interval (optional)
+    # time (in sec) to wait in case no backlog item was found before searching for new backlog item again
+    lookup_new_backlog_item_interval: 60
+
+    # prohibited_licenses (optional)
+    # list of licenses which are prohibited and should be reported
+    prohibited_licenses: []
+
+    # max_processing_days (optional)
+    # configuration of allowed maximum processing time based on the severity of the findings
+    # defaults to github.com/gardener/cc-utils' github.compliance.model.MaxProcessingTimesDays
+    max_processing_days:
+      low: 120
+      medium: 90
+      high: 30
+      very_high_or_greater: 30
+      blocker: 0
+
+    # github_issues_target_repository_url
+    # repository that is used to post github issues to
+    github_issues_target_repository_url: ...
+
+    # github_issue_templates
+    # templates to configure appearance and format of issues based on type of findings
+    github_issue_templates:
+        # type
+        # selection of {"licenses/bdba", "vulnerabilities/bdba"}
+        # type of issue the template should be used for
+      - type: ...
+        # body
+        # custom template using python3's format-str syntax
+        # available variables: "summary", "component_name", "component_version", "artefact_name", "artefact_version", "artefact_type"
+        body: ...
+
+    # github_issue_labels_to_preserve (optional)
+    # labels matching one of these regexes won't be removed upon an issue update
+    github_issue_labels_to_preserve: []
+
+    # number_included_closed_issues (optional)
+    # number of closed issues to consider when evaluating creating vs re-opening an issue
+    number_included_closed_issues: 0
+
+    # artefact_types (optional)
+    # list of artefact types for which the scanning tools should be instrumented
+    artefact_types:
+      - ociImage
+      - application/tar+vm-image-rootfs
+
+    # matching_configs (optional)
+    # list of configs to filter artefacts (resources, sources) for which the scanning tools should be instrumented
+    matching_configs:
+        # name
+        # name of the filter
+      - name: ...
+        # rules
+        # list of rules that should be applied for this filter
+        rules:
+            # target
+            # e.g. "component.name", "resource.extraIdentity.platform"
+          - target: ...
+            # expression
+            # regular expression
+            expression: ...
+            # matching_semantics
+            # selection of {"include", "exclude"}
+            matching_semantics: ...
+
+    # cve_rescoring_rules (optional)
+    # rescoring rules are used for proposed rescorings
+    cve_rescoring_rules:
+      - category_value: ...
+        rules:
+          - cve_values:
+              - ...
+            # rescore
+            # selection of {"no-change", "reduce", "not-exploitable"}
+            rescore: ...
+
+    # finding_type_issue_replication_configs
+    # finding type specific configuration; adding a finding type here will enable the issue replication
+    # for this type of finding
+    finding_type_issue_replication_configs: []
+        # finding_type
+        # one of github.com/gardener/cc-utils dso.model.Datatype
+#     - finding_type: 'finding/vulnerability'
+
+        # enable_issue_assignees
+        # whether or not detected responsibles should be assigned to the replicated findings
+#       enable_issue_assignees: ...
+
+        # enable_issue_per_finding
+        # whether or not each finding should be reported in a different issue
+#       enable_issue_per_finding: False
+
+        # cve_threshold
+        # only applies to issues for finding type "finding/vulnerability"; findings with a cvss v3 score
+        # below this threshold won't be reported in the issues
+#       cve_threshold: ...
+
+#     - finding_type: 'finding/license'
+#       enable_issue_assignees: ...
+#       enable_issue_per_finding: False
+
+#     - finding_type: 'finding/malware'
+#       enable_issue_assignees: ...
+#       enable_issue_per_finding: False
+
+#     - finding_type: 'finding/diki'
+#       enable_issue_assignees: ...
+#       enable_issue_per_finding: True
+
+  # deliveryDbBackup
+  # specific configuration which is only used by the deliveryDbBackup extensions
+  deliveryDbBackup:
+
+    # delivery_db_cfg_name (required)
+    # reference delivery-db configuration by name
+    delivery_db_cfg_name: internal
+
+    # component_name (required)
+    # comopnent-name of backup, e.g.:
+    # my.project/delivery-db-backup
+    component_name: ...
+
+    # ocm_repo (required)
+    # ocm repository to store backup component
+    ocm_repo: ...
+
+    # schedule (required)
+    # cron syntax to specify backup schedule
+    # e.g. '0 0 * * *' for "every day at 12:00 AM"
+    schedule: ...
+
+    # successful_jobs_history_limit (required)
+    # specify how many completed jobs should be kept
+    # setting the limit to 0 corresponds to keeping none of the jobs after they finish
+    # at least 1 should be kept to properly display container status in delivery-dashboard
+    successful_jobs_history_limit: 1
+
+    # failed_jobs_history_limit (required)
+    # specify how many failed jobs should be kept
+    failed_jobs_history_limit: 1
+
+    # extra_pg_dump_args (optional)
+    # pass additional arguments to `pg_dump`
+    # e.g. extra_pg_dump_args: ["--my-arg", "value"]
+    extra_pg_dump_args: []
+
+    # backup_retention_count (optional)
+    # setting this parameter to a value > 0 enables the removal of old backups
+    # only the last <backup_retention_count> backups are kept
+    backup_retention_count: 0

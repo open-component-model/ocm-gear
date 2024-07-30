@@ -1,0 +1,17 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # privileges
+  # selection of {"readwrite", "readonly"}
+  privileges: ...
+
+  # image_reference_prefixes (optional)
+  # specific repositories this secret should be used for
+  # if no repositories are specified, the secret is used for all
+  # list of repositories, e.g. "europe-docker.pkg.dev/gardener-project/releases"
+  image_reference_prefixes:
+  - ...
+
+  username: ...
+  password: ...

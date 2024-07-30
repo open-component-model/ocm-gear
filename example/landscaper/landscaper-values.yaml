@@ -1,0 +1,10 @@
+landscaper:
+  landscaper:
+    deployers:
+    - container
+    - helm
+    - manifest
+
+  # optionally: specifiy landscaper version
+  # image:
+  #   tag: 'v0.77.0'

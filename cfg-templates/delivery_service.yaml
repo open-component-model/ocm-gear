@@ -1,0 +1,346 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # invalid_semver_ok
+  # whether to ignore invalid (semver) version(s) when resolving "greatest" component-version
+  invalid_semver_ok: True
+
+  # replicas
+  # amount of delivery-service relicas
+  replicas: 3
+
+  # pod
+  # object consisting of key/value-pairs to customize the pod (template)
+  pod:
+
+    # annotations
+    # annotations to be passed to the pod (template)
+    # object consisting of key/value-pairs
+    annotations: {}
+
+    # labels
+    # labels to be passed to the pod (template)
+    # object consisting of key/value-pairs
+    labels: {}
+
+  # ingress
+  # object consisting of key/value-pairs to customize the ingress
+  ingress:
+
+    # annotations
+    # annotations to be passed to the ingress resource
+    # object consisting of key/value-pairs
+    annotations: {}
+
+    # class
+    # ingress class used for the annotation "kubernetes.io/ingress.class", e.g. "nginx"
+    class: nginx
+
+    # hosts
+    # (internal and external) hostnames of the Delivery-Service
+    hosts:
+    - ...
+
+  # protocol
+  # protocol the Delivery-Dashboard uses to connect to the Delivery-Service
+  # selection of {"https", "http"}
+  protocol: ...
+
+  # env
+  # list of optional environment variables passed to the Delivery-Service container
+  env: []
+  # - name: ...
+  #   value: ...
+
+  # optional environment variables to configure uWSGI setup
+  # - name: UWSGI_MASTER
+  #   value: 1
+  # - name: UWSGI_PROCESSES
+  #   value: 1
+  # - name: UWSGI_THREADS
+  #   value: 20
+
+  # features_cfg
+  # further configuration to individualize the Delivery-Service backend
+  features_cfg:
+
+    # ocmRepoMappings
+    # list of component-name-prefix to ocm-repository mappings
+    # if multiple mappings match a component, the first one wins (has a higher priority)
+    ocmRepoMappings:
+
+      # prefix <str>
+      # consider mapping for component-names starting with prefix
+    - prefix: ...
+
+      # repository <str>
+      # url of the repository, e.g. "europe-docker.pkg.dev/gardener-project/releases/<some-path>"
+      repository: ...
+
+    # specialComponents
+    # list of components which have a special meaning, e.g. landscape components
+    # these components are pinned in the Delivery-Dashboard
+    specialComponents:
+
+      # id <int>
+      # unique id of the component, used to distinguish between different configurations for same component version
+    - id: ...
+
+      # name
+      # name of the component as it is declared in its component descriptor
+      name: ...
+
+      # displayName
+      # the name that should be displayed in the pinned list in the Delivery-Dashboard
+      displayName: ...
+
+      # type
+      # the type is used to group the pinned components
+      type: ...
+
+      # version <str> or <object>
+      # specifies the version of the pinnend component
+      # use "greatest" to reference always the latest/greatest version
+      # can also be specified via reference (repository path)
+      # -> see "currentVersion" below for type def if using a reference
+      version: ...
+
+      # versionFilter (optional)
+      # selection of {"all", "releases_only"}
+      # specifies the behaviour which versions should be included when resolving the version
+      # alias "greatest"; if not set it defaults to the global configuration of the delivery-service
+      versionFilter: ...
+
+      # icon
+      # icon which is shown with components of this type on the landing page of the dashboard
+      # selection of {"home", "landscape"}
+      icon: ...
+
+      # repoContextUrl (optional)
+      # set the repository in which this component is stored
+      # if no repository is specified, the default one is used
+      repoContextUrl: ...
+
+      # sprintRules (optional)
+      # if sprints are configured in the yellow_pages_repo, this property can be used to set freezing periods
+      sprintRules:
+
+        # frozenFrom
+        # specifies from which event on the component should be frozen
+        frozenFrom: ...
+
+        # frozenUntil
+        # specifies until which event the component should be frozen
+        frozenUntil: ...
+
+        # frozenWarningOffsetDays
+        # specifies the number of days before the actual freeze where a warning is indicated in the Delivery-Dashboard
+        frozenWarningOffsetDays: ...
+
+      # currentVersion (optional)
+      # specifies where the latest version of the component can be found
+      currentVersion:
+
+        # source
+        source:
+
+          # type
+          # specifies the type of source to retrieve the version
+          # # selection of {"github"}
+          type: ...
+
+          # repo
+          # repository from which the version retrieval starts
+          repo: ...
+
+          # relpath
+          # path from repo as current directory to the version file containing the current version
+          # custom combination of raw strings or path elements, e.g. submodules
+          # note: the last element has to be the (path to the) version file
+          relpath:
+
+            # type
+            # type of the path element
+            # selection of {"submodule"}
+          - type: ...
+
+            # name
+            # name or path of this path element
+            name: ...
+
+          - ...
+
+          # postprocess <boolean> (optional)
+          # specifies whether the referenced version should be concatenated with the current commit sha
+          postprocess: ...
+
+      # dependencies (optional)
+      # list of references to component dependencies which versions should be tracked
+      dependencies:
+
+        # name
+        # component name
+      - name: ...
+
+        # displayName
+        # the name that should be displayed in the version overview
+        displayName: ...
+
+        # currentVersion (optional)
+        # specifies where the latest version of the component can be found
+        currentVersion:
+
+          # source
+          source:
+
+            # type
+            # specifies the type of source to retrieve the version
+            # # selection of {"github"}
+            type: ...
+
+            # repo
+            # repository from which the version retrieval starts
+            repo: ...
+
+            # relpath
+            # path from repo as current directory to the version file containing the current version
+            # custom combination of raw strings or path elements, e.g. submodules
+            # note: the last element has to be the (path to the) version file
+            relpath:
+
+              # type
+              # type of the path element
+              # selection of {"submodule"}
+            - type: ...
+
+              # name
+              # name or path of this path element
+              name: ...
+
+            - ...
+
+            # postprocess <boolean> (optional)
+            # specifies whether the referenced version should be concatenated with the current commit sha
+            postprocess: ...
+
+    # rescoring
+    # rule sets are used for the manual rescoring of compliance scan results
+    rescoring:
+
+      # defaultRuleSetName
+      # the name of the default rule set specified in rescoringRuleSets
+      defaultRuleSetName: ...
+
+      # rescoringRuleSets
+      # list of rule sets
+      rescoringRuleSets:
+
+        # name
+        # the name of the rule set
+      - name: ...
+
+        # description
+        # url to a more detailed description of this rule set
+        description: ...
+
+        # rule_set
+        # list of the actual assignment of category values and their rescoring rules
+        rule_set:
+        - category_value: ...
+          rules:
+          - cve_values:
+            - ...
+            # rescore
+            # selection of {"no-change", "reduce", "not-exploitable"}
+            rescore: ...
+
+      # cveCategorisationLabelUrl
+      # url to documentation about valid cve categorisation labels in component descriptors
+      cveCategorisationLabelUrl: ...
+
+      # cveSeverityUrl
+      # url to documentation about cve severities and their mapping to maximum allowed processing times
+      cveSeverityUrl: ...
+
+    # addressbook
+    # the addressbook is required to display information of responsibles
+    addressbook:
+      repoUrl: ...
+      # addressbookRelpath
+      addressbookRelpath: ...
+      # githubMappingsRelpath
+      githubMappingsRelpath: ...
+
+    # sprints
+    # sprints are required for the delivery-gear-extensions as well as to display sprint information in the delivery-dashboard
+    sprints:
+      repoUrl: ...
+      # sprintsRelpath
+      sprintsRelpath: ...
+      # sprintDateNameMappings (optional)
+      # list of mappings of sprint date names and the corresponding displayed name in the delivery-dashboard
+      sprintDateNameMappings:
+      - dateName: ...
+        displayName: ...
+
+    # tests
+    # specifies which assets of which components should be downloaded via the tests-tab
+    tests:
+
+      # componentsWithDownloadableTestResults
+      # list of components which have downloadable test assets
+      componentsWithDownloadableTestResults: []
+
+        # componentName
+      # - componentName: ...
+
+        # description
+        # heading of the download element in the dashboard
+        # description: ...
+
+        # assetNamePrefixes
+        # assets starting with one of the prefixes in this list are going to be downloaded
+        # assetNamePrefixes:
+        # - ...
+
+        # displayName
+        # name of the component as it is displayed in the download element in the dashboard
+        # displayName: ...
+
+        # downloadableName:
+        # prefix of the downloaded file which will be combined with the referenced version
+        # downloadableName: ...
+
+    # upgradePRs
+    # specifies how upgrade pull requests are recognized
+    upgradePRs:
+
+      # identificationMethod
+      # selection of {"title"}
+      identificationMethod: ...
+
+      # titleRegex
+      # python regex string to identify UPRs if identificationMethod is set to "title"
+      titleRegex: ...
+
+    # issues
+    # if issues of a component should be displayed in the dashboard, they have to be added to this configuration
+    issues:
+
+      # issueRepoMappings
+      # list of mappings of component names and the corresponding repo to lookup issues
+      issueRepoMappings: []
+
+        # repoName
+      # - componentName: ...
+
+        # issueRepo
+        # repoName: ...
+
+    # versionFilter (optional)
+    # selection of {"all", "releases_only"}
+    # specifies the behaviour which versions should be included when resolving the version
+    # alias "greatest"; if not set it defaults to only consider release versions according
+    # to SemVer (no suffix/snapshot)
+    versionFilter: releases_only

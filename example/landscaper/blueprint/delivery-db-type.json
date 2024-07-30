@@ -1,0 +1,15 @@
+{
+    "type": "object",
+    "properties": {
+        "fullnameOverride": { "type": "string" },
+        "image": {
+            "type": "object",
+            "properties": {
+                "tag": { "type": "string" }
+            },
+            "required": ["tag"]
+        },
+        "postgresqlPassword": { "type": "string" }
+    },
+    "required": ["fullnameOverride", "image", "postgresqlPassword"]
+}

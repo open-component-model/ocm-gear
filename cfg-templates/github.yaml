@@ -1,0 +1,47 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # apiUrl
+  apiUrl: ...
+
+  # available_protocols
+  # list of protocols, e.g. "https" and "ssh"
+  available_protocols:
+  - ...
+
+  # disable_tls_validation
+  # selection of {"true", "false"}
+  disable_tls_validation: ...
+
+  # repo_urls (optional)
+  # specific repositories this secret should be used for
+  # if no repositories are specified, the secret is used for all
+  # list of repositories, e.g. "github.com/gardener.*"
+  repo_urls:
+  - ...
+
+  # purpose_labels (required)
+  # specify labels used to lookup github config
+  #  "ci" must be set!
+  purpose_labels:
+  - ci
+
+  # technical_users
+  # list of technical users used to authenticate for repositories
+  technical_users:
+
+    # username
+  - username: ...
+
+    # emailAddress
+    emailAddress: ...
+
+    # authToken
+    authToken: ...
+
+    # password
+    password: ...
+
+    # privateKey
+    privateKey: ...

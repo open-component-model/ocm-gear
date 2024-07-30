@@ -1,0 +1,63 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # auth
+  # configuration of oauth
+  auth:
+
+    # oauth_cfgs
+    # list of oauth configurations
+    oauth_cfgs:
+
+      # name
+      # name of the configuration
+    - name: ...
+
+      # type
+      # type of the oauth configuration
+      # selection of {"github"}
+      type: github
+
+      # github_cfg
+      # the name of the config element in github.yaml which should be used for this authentication
+      github_cfg: internal
+
+      # oauth_url
+      oauth_url: https://github.com/login/oauth/authorize
+
+      # token_url
+      token_url: https://github.com/login/oauth/access_token
+
+      # client_id
+      client_id: ...
+
+      # client_secret
+      client_secret: ...
+
+  # service
+  # configuration used for signing in the Delivery-Service
+  service:
+
+    # signing
+    # list of signing keys
+    signing:
+
+      # id
+      # id of the signing key
+    - id: 1
+
+      # algorithm
+      # algorithm used for signing
+      algorithm: RS256
+
+      # secret
+      # if algorithm "RS256" is selected, this is the private key
+      secret: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        -----END RSA PRIVATE KEY-----
+
+      # public_key
+      public_key: |-
+        -----BEGIN PUBLIC KEY-----
+        -----END PUBLIC KEY-----

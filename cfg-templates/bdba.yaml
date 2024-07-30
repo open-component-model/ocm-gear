@@ -1,0 +1,38 @@
+# OPTIONAL
+# used for compliance-scans and cvss-rescoring
+# usage requires:
+# - removal of comment for entry "delivery_service.bdba" in "configs.yaml"
+# - removal of comment for entry "bdba" in "config_types.yaml"
+
+internal:
+
+  # api_url
+  api_url: ...
+
+  # group_ids
+  # give list of (BDBA) group this technical user should be used for
+  group_ids:
+  # - 111
+  # - ...
+
+  # tls_verfiy
+  # set to 'true'
+  tls_verify: true
+
+  credentials:
+
+    # auth_scheme
+    # only bearer_token supported
+    auth_scheme: bearer_token
+
+    # username
+    # username of technical user
+    username: ...
+
+    # password
+    # password of technical user
+    password: ...
+
+    # token
+    # api-token of technical user
+    token: ...

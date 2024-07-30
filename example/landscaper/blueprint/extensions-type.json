@@ -1,0 +1,98 @@
+{
+    "type": "object",
+    "properties": {
+        "configuration": {
+            "type": "object",
+            "properties": {
+                "scanConfigurations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": { "type": "string" },
+                            "spec": { "type": "object" }
+                        }
+                    }
+                }
+            }
+        },
+        "artefact-enumerator": {
+            "type": "object",
+            "properties": {
+                "enabled": { "type": "boolean" },
+                "envVars": {
+                    "type": "object",
+                    "properties": {
+                        "CFG_FACTORY_SECRET_PATH": { "type": "string" },
+                        "K8S_TARGET_NAMESPACE": { "type": "string" },
+                        "K8S_CFG_NAME": { "type": "string" }
+                    },
+                    "required": ["CFG_FACTORY_SECRET_PATH", "K8S_TARGET_NAMESPACE"]
+                },
+                "configuration": {
+                    "type": "object",
+                    "properties": {
+                        "schedule": { "type": "string" },
+                        "successful_jobs_history_limit": { "type": "integer" },
+                        "failedJobsHistoryLimit": { "type": "integer" }
+                    }
+                }
+            }
+        },
+        "backlog-controller": {
+            "type": "object",
+            "properties": {
+                "enabled": { "type": "boolean" },
+                "envVars": {
+                    "type": "object",
+                    "properties": {
+                        "CFG_FACTORY_SECRET_PATH": { "type": "string" },
+                        "K8S_TARGET_NAMESPACE": { "type": "string" },
+                        "K8S_CFG_NAME": { "type": "string" }
+                    },
+                    "required": ["CFG_FACTORY_SECRET_PATH", "K8S_TARGET_NAMESPACE"]
+                },
+                "scanConfigurations": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                },
+                "namespace": { "type": "string" }
+            }
+        },
+        "delivery-db-backup": {
+            "type": "object",
+            "properties": {
+                "enabled": { "type": "boolean" },
+                "configurations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "CFG_FACTORY_SECRET_PATH": { "type": "string" },
+                            "K8S_TARGET_NAMESPACE": { "type": "string" },
+                            "K8S_CFG_NAME": { "type": "string" },
+                            "DELIVERY_GEAR_CFG_NAME": { "type": "string" },
+                            "SCHEDULE": { "type": "string" },
+                            "SUCCESSFUL_JOBS_HISTORY_LIMIT": { "type": "integer" },
+                            "FAILED_JOBS_HISTORY_LIMIT": { "type": "integer" }
+                        },
+                        "required": [
+                            "CFG_FACTORY_SECRET_PATH",
+                            "K8S_TARGET_NAMESPACE",
+                            "DELIVERY_GEAR_CFG_NAME",
+                            "SCHEDULE",
+                            "SUCCESSFUL_JOBS_HISTORY_LIMIT",
+                            "FAILED_JOBS_HISTORY_LIMIT"
+                        ]
+                    }
+                }
+            }
+        },
+        "freshclam": {
+            "type": "object",
+            "properties": {
+                "enabled": { "type": "boolean" }
+            }
+        }
+    }
+}

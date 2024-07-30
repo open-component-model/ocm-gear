@@ -1,0 +1,11 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # service_host
+  # hostname under which the Delivery-Service can be accessed
+  service_host: ...
+
+  # dashboard_host
+  # hostname under which the Delivery-Dashboard can be accessed
+  dashboard_host: ...

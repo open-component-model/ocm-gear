@@ -1,0 +1,39 @@
+# config element name
+# must match with reference in configs.yaml
+internal:
+
+  # replicas
+  # amount of delivery-dashboard relicas
+  replicas: 1
+
+  # pod
+  # object consisting of key/value-pairs to customize the pod (template)
+  pod:
+
+    # annotations
+    # annotations to be passed to the pod (template)
+    # object consisting of key/value-pairs
+    annotations: {}
+
+    # labels
+    # labels to be passed to the pod (template)
+    # object consisting of key/value-pairs
+    labels: {}
+
+  # ingress
+  # object consisting of key/value-pairs to customize the ingress
+  ingress:
+
+    # annotations
+    # annotations to be passed to the ingress resource
+    # object consisting of key/value-pairs
+    annotations: {}
+
+    # class
+    # ingress class used for the annotation "kubernetes.io/ingress.class", e.g. "nginx"
+    class: nginx
+
+    # hosts
+    # (internal and external) hostnames of the Delivery-Dashboard
+    hosts:
+    - ...

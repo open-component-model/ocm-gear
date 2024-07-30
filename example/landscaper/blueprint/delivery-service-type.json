@@ -1,0 +1,46 @@
+{
+    "type": "object",
+    "properties": {
+        "args": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "envVars": {
+            "type": "object",
+            "properties": {
+                "CFG_FACTORY_SECRET_PATH": { "type": "string" },
+                "FEATURES_CFG_PATH": { "type": "string" },
+                "K8S_TARGET_NAMESPACE": { "type": "string" },
+                "K8S_CFG_NAME": { "type": "string" }
+            },
+            "required": ["CFG_FACTORY_SECRET_PATH", "FEATURES_CFG_PATH", "K8S_TARGET_NAMESPACE"]
+        },
+        "pod": {
+            "type": "object",
+            "properties": {
+                "annotations": { "type": "object" },
+                "labels": { "type": "object" }
+            }
+        },
+        "ingress": {
+            "type": "object",
+            "properties": {
+                "annotations": { "type": "object" },
+                "class": { "type": "string" },
+                "hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": ["hosts"]
+        },
+        "replicas": { "type": "number" },
+        "containerPort": { "type": "number" },
+        "servicePort": { "type": "number" }
+    },
+    "required": ["ingress"]
+}

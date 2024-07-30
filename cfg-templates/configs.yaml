@@ -1,0 +1,22 @@
+# this file specifies the config elements which should be used and groups them in sets
+
+ocm_gear:
+  delivery_dashboard: internal
+  delivery_db: internal
+  delivery_service: internal
+  delivery: internal
+  delivery_endpoints: internal
+  ingress: internal
+  cfg_set: delivery_service
+  # To enable delivery gear extensions (e.g. bdba, issue-replicator), uncomment below:
+  # delivery_gear_extensions: internal
+
+delivery_service:
+  # aws: internal # used for scans of delivery-gear-extensions if s3-client is required
+  container_registry: internal
+  delivery_db: internal
+  delivery: internal
+  delivery_endpoints: internal
+  elasticsearch: internal
+  github: internal
+  # bdba: internal # required for compliance scans and cvss-rescoring

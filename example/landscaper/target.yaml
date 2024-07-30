@@ -1,0 +1,26 @@
+apiVersion: landscaper.gardener.cloud/v1alpha1
+kind: Target
+metadata:
+  name: target-ocm-gear
+  namespace: ls
+spec:
+  type: landscaper.gardener.cloud/kubernetes-cluster
+  config:
+    kubeconfig: |
+      apiVersion: v1
+      kind: Config
+      current-context: my-context
+      contexts:
+      - name: my-context
+        context:
+          cluster: my-cluster
+          user: my-user
+      clusters:
+      - name: my-cluster
+        cluster:
+          server: ...
+          certificate-authority-data: ...
+      users:
+      - user:
+          token: ...
+        name: my-user
