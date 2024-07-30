@@ -12,7 +12,7 @@ ocm_gear:
   # delivery_gear_extensions: internal
 
 delivery_service:
-  # aws: internal # used for scans of delivery-gear-extensions if s3-client is required
+  # aws: internal # used for scans of extensions if s3-client is required
   container_registry: internal
   delivery_db: internal
   delivery: internal

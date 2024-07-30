@@ -273,7 +273,7 @@ internal:
       githubMappingsRelpath: ...
 
     # sprints
-    # sprints are required for the delivery-gear-extensions as well as to display sprint information in the delivery-dashboard
+    # sprints are required for the extensions as well as to display sprint information in the delivery-dashboard
     sprints:
       repoUrl: ...
       # sprintsRelpath

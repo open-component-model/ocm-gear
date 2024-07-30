@@ -105,7 +105,7 @@ def main():
         component=component,
         component_ref=cm.ComponentReference(
             name='delivery-dashboard',
-            componentName='ocm.software/delivery-gear/delivery-dashboard',
+            componentName='ocm.software/ocm-gear/delivery-dashboard',
             version=delivery_dashboard_version,
             labels=[],
         )
@@ -115,7 +115,7 @@ def main():
         component=component,
         component_ref=cm.ComponentReference(
             name='delivery-service',
-            componentName='ocm.software/delivery-gear/delivery-service',
+            componentName='ocm.software/ocm-gear/delivery-service',
             version=delivery_service_version,
             labels=[],
         )

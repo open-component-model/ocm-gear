@@ -1,5 +1,5 @@
 # OPTIONAL
-# used for bdba scans of delivery-gear-extensions if s3-client is required
+# used for bdba scans of extensions if s3-client is required
 # usage requires:
 # - removal of comment for entry "delivery_service.aws" in "configs.yaml"
 

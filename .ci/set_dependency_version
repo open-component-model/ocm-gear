@@ -19,9 +19,9 @@ def write_component_version_to_file(file_path: str):
 
 
 def main():
-    if dependency_name == 'ocm.software/delivery-gear/delivery-service':
+    if dependency_name == 'ocm.software/ocm-gear/delivery-service':
         write_component_version_to_file(delivery_service_versionfile)
-    elif dependency_name == 'ocm.software/delivery-gear/delivery-dashboard':
+    elif dependency_name == 'ocm.software/ocm-gear/delivery-dashboard':
         write_component_version_to_file(delivery_dashboard_versionfile)
     else:
         raise RuntimeError(f"Don't know how to upgrade dependency: {dependency_name}")

@@ -85,7 +85,7 @@ deployExecutions:
         values:
         {{ toYaml .imports.deliveryDbHelmValues | nindent 10 }}
     {{ end }}
-- name: delivery-gear-extensions
+- name: extensions
   type: GoTemplate
   template: |
     deployItems:
@@ -100,7 +100,7 @@ deployExecutions:
         chart:
           ref: {{ with (getResource .cd "name" "extensions-chart") }} {{ .access.imageReference }} {{ end }}
         updateStrategy: patch
-        name: delivery-gear-extensions
+        name: extensions
         namespace: {{ .imports.namespace }}
         values:
         {{ toYaml .imports.extensionsHelmValues | nindent 10 }}
