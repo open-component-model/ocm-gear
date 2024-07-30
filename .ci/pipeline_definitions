@@ -13,8 +13,9 @@ ocm-gear:
     update-dependencies:
       traits:
         update_component_deps:
-          merge_policy: auto_merge
-          merge_method: rebase
+          merge_policies:
+            - merge_mode: auto_merge
+              merge_method: rebase
         cronjob:
           interval: 5m
         component_descriptor:
