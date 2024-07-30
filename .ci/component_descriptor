@@ -24,6 +24,7 @@ repo_dir = os.path.abspath(os.path.join(own_dir, os.pardir))
 
 delivery_service_versionfile = os.path.join(repo_dir, 'DELIVERY_SERVICE_VERSION')
 delivery_dashboard_versionfile = os.path.join(repo_dir, 'DELIVERY_DASHBOARD_VERSION')
+delivery_db_versionfile = os.path.join(repo_dir, 'DELIVERY_DB_VERSION')
 
 installation_dir = os.path.join(repo_dir, 'installation')
 
@@ -97,6 +98,7 @@ def add_installation_resource(
 def main():
     delivery_service_version = component_version_from_file(delivery_service_versionfile)
     delivery_dashboard_version = component_version_from_file(delivery_dashboard_versionfile)
+    delivery_db_version = component_version_from_file(delivery_db_versionfile)
 
     component_descriptor = parse_component_descriptor()
     component = component_descriptor.component
@@ -117,6 +119,16 @@ def main():
             name='delivery-service',
             componentName='ocm.software/ocm-gear/delivery-service',
             version=delivery_service_version,
+            labels=[],
+        )
+    )
+
+    add_component_ref(
+        component=component,
+        component_ref=cm.ComponentReference(
+            name='delivery-db',
+            componentName='ocm.software/ocm-gear/delivery-db',
+            version=delivery_db_version,
             labels=[],
         )
     )

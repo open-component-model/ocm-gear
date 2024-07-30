@@ -13,7 +13,6 @@ KUBECONFIG=""
 KUBERNETES_CFG_NAME=""
 NAMESPACE=delivery
 OCM_GEAR_VERSION=""
-POSTGRES_VERSION=10.12.4
 VALUES_DIR="${OWN_DIR}/helm-values"
 
 parse_flags() {
@@ -42,9 +41,6 @@ parse_flags() {
       ;;
     --namespace)
       shift; NAMESPACE="$1"
-      ;;
-    --postgres-version)
-      shift; POSTGRES_VERSION="$1"
       ;;
     --values-dir)
       shift; VALUES_DIR="$1"
@@ -77,7 +73,6 @@ ${OWN_DIR}/installation/install.sh \
   ${KUBECONFIG:+"--kubeconfig"} ${KUBECONFIG:+${KUBECONFIG}} \
   ${KUBERNETES_CFG_NAME:+"--kubernetes-cfg-name"} ${KUBERNETES_CFG_NAME:+${KUBERNETES_CFG_NAME}} \
   ${NAMESPACE:+"--namespace"} ${NAMESPACE:+${NAMESPACE}} \
-  ${POSTGRES_VERSION:+"--postgres-version"} ${POSTGRES_VERSION:+${POSTGRES_VERSION}} \
   ${VALUES_DIR:+"--values-dir"} ${VALUES_DIR:+${VALUES_DIR}} \
   ${OCM_GEAR_VERSION:+"--version"} ${OCM_GEAR_VERSION:+${OCM_GEAR_VERSION}}
 

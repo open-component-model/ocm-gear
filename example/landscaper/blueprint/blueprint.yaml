@@ -78,7 +78,7 @@ deployExecutions:
         apiVersion: helm.deployer.landscaper.gardener.cloud/v1alpha1
         kind: ProviderConfiguration
         chart:
-          ref: europe-docker.pkg.dev/gardener-project/releases/delivery-gear/delivery-charts/postgresql:10.12.4
+          ref: {{ with (getResource .cd "name" "delivery-db-chart") }} {{ .access.imageReference }} {{ end }}
         updateStrategy: patch
         name: delivery-db
         namespace: {{ .imports.namespace }}

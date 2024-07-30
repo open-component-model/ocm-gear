@@ -13,7 +13,6 @@ KUBECONFIG=""
 KUBERNETES_CFG_NAME=""
 NAMESPACE=delivery
 OCM_GEAR_VERSION=""
-POSTGRES_VERSION=10.12.4
 VALUES_DIR="${OWN_DIR}/helm-values"
 
 parse_flags() {
@@ -42,9 +41,6 @@ parse_flags() {
       ;;
     --namespace)
       shift; NAMESPACE="$1"
-      ;;
-    --postgres-version)
-      shift; POSTGRES_VERSION="$1"
       ;;
     --values-dir)
       shift; VALUES_DIR="$1"
@@ -80,7 +76,7 @@ check_required_flags() {
 
 parse_flags "$@"
 parse_kubeconfig
-check_required_flags INGRESS_NAMESPACE KUBECONFIG NAMESPACE POSTGRES_VERSION VALUES_DIR
+check_required_flags INGRESS_NAMESPACE KUBECONFIG NAMESPACE VALUES_DIR
 
 if ! which ocm 1>/dev/null; then
   echo ">>> Installing OCM cli..."
@@ -112,7 +108,7 @@ echo ">>> Installing OCM-Gear in version ${OCM_GEAR_VERSION}"
 DELIVERY_SERVICE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-service" and .type == "helmChart/v1") | .access.imageReference')
 DELIVERY_DASHBOARD_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-dashboard" and .type == "helmChart/v1") | .access.imageReference')
 EXTENSIONS_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "extensions" and .type == "helmChart/v1") | .access.imageReference')
-DELIVERY_DB_CHART="europe-docker.pkg.dev/gardener-project/releases/delivery-gear/delivery-charts/postgresql"
+DELIVERY_DB_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "postgresql" and .type == "helmChart/v1") | .access.imageReference')
 
 if [ ! -d "${VALUES_DIR}" ]; then
   echo ">>> Generating required helm values into ${VALUES_DIR}"
@@ -152,9 +148,9 @@ kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 kubectl config set-context --current --namespace=$NAMESPACE
 
 echo ">>> Installing delivery-db from ${DELIVERY_DB_CHART}"
-helm upgrade -i delivery-db oci://${DELIVERY_DB_CHART} \
+helm upgrade -i delivery-db oci://${DELIVERY_DB_CHART%:*} \
   --namespace ${NAMESPACE} \
-  --version ${POSTGRES_VERSION} \
+  --version ${DELIVERY_DB_CHART#*:} \
   --values ${VALUES_DIR}/values-delivery-db.yaml
 
 echo ">>> Installing delivery-service from ${DELIVERY_SERVICE_CHART}"
