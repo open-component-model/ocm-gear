@@ -4,7 +4,7 @@
 
 This repository is used to aggregate the different components comprising the _OCM-Gear_, i.e.
 the [Delivery-Service](https://github.com/open-component-model/delivery-service) and -Extensions,
-the [Delivery-DB](https://github.com/open-component-model/delivery-db) as well as the
+the [Delivery-Database](https://github.com/open-component-model/delivery-database) as well as the
 [Delivery-Dashboard](https://github.com/open-component-model/delivery-dashboard).
 Also, it adds installation utilities to ease the installation of named components in a
 Kubernetes environment. The repository contains the installer itself, documentation and

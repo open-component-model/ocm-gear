@@ -108,7 +108,7 @@ echo ">>> Installing OCM-Gear in version ${OCM_GEAR_VERSION}"
 DELIVERY_SERVICE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-service" and .type == "helmChart/v1") | .access.imageReference')
 DELIVERY_DASHBOARD_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-dashboard" and .type == "helmChart/v1") | .access.imageReference')
 EXTENSIONS_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "extensions" and .type == "helmChart/v1") | .access.imageReference')
-DELIVERY_DB_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "postgresql" and .type == "helmChart/v1") | .access.imageReference')
+DELIVERY_DATABASE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "postgresql" and .type == "helmChart/v1") | .access.imageReference')
 
 if [ ! -d "${VALUES_DIR}" ]; then
   echo ">>> Generating required helm values into ${VALUES_DIR}"
@@ -147,10 +147,10 @@ echo ">>> Creating namespace ${NAMESPACE}"
 kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 kubectl config set-context --current --namespace=$NAMESPACE
 
-echo ">>> Installing delivery-db from ${DELIVERY_DB_CHART}"
-helm upgrade -i delivery-db oci://${DELIVERY_DB_CHART%:*} \
+echo ">>> Installing delivery-database from ${DELIVERY_DATABASE_CHART}"
+helm upgrade -i delivery-db oci://${DELIVERY_DATABASE_CHART%:*} \
   --namespace ${NAMESPACE} \
-  --version ${DELIVERY_DB_CHART#*:} \
+  --version ${DELIVERY_DATABASE_CHART#*:} \
   --values ${VALUES_DIR}/values-delivery-db.yaml
 
 echo ">>> Installing delivery-service from ${DELIVERY_SERVICE_CHART}"
