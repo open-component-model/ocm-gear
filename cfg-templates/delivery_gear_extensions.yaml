@@ -190,6 +190,11 @@ internal:
       - ociImage
       - application/tar+vm-image-rootfs
 
+    # blacklist_finding_types (optional)
+    # list of finding types which are provided by BDBA but should _not_ be populated into the delivery-db
+    # see github.com/gardener/cc-utils dso.model.Datatype for possible values
+    blacklist_finding_types: []
+
     # matching_configs (optional)
     # list of configs to filter artefacts (resources, sources) for which the scanning tools should be instrumented
     matching_configs:
