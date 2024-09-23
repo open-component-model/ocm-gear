@@ -6,12 +6,14 @@ import logging
 import os
 import tarfile
 import tempfile
+
 import yaml
 
 import ccc.oci
 import ci.util
 import cnudie.util
-import gci.componentmodel as cm
+import ocm
+
 
 logger = logging.getLogger(__name__)
 
@@ -36,21 +38,21 @@ def component_version_from_file(file_path: str):
 
 
 def parse_component_descriptor():
-    component_descriptor = cm.ComponentDescriptor.from_dict(
+    component_descriptor = ocm.ComponentDescriptor.from_dict(
         ci.util.parse_yaml_file(component_descriptor_base_path)
     )
     return component_descriptor
 
 
 def add_component_ref(
-    component: cm.Component,
-    component_ref: cm.ComponentReference,
+    component: ocm.Component,
+    component_ref: ocm.ComponentReference,
 ):
     component.componentReferences.append(component_ref)
 
 
 def add_installation_resource(
-    component: cm.Component,
+    component: ocm.Component,
 ):
     mimetype = 'application/tar+gzip'
 
@@ -82,11 +84,11 @@ def add_installation_resource(
     )
 
     component.resources.append(
-        cm.Resource(
+        ocm.Resource(
             name='installation',
             version=component_version,
             type='directoryTree',
-            access=cm.LocalBlobAccess(
+            access=ocm.LocalBlobAccess(
               mediaType=mimetype,
               localReference=digest,
               size=octets,
@@ -105,7 +107,7 @@ def main():
 
     add_component_ref(
         component=component,
-        component_ref=cm.ComponentReference(
+        component_ref=ocm.ComponentReference(
             name='delivery-dashboard',
             componentName='ocm.software/ocm-gear/delivery-dashboard',
             version=delivery_dashboard_version,
@@ -115,7 +117,7 @@ def main():
 
     add_component_ref(
         component=component,
-        component_ref=cm.ComponentReference(
+        component_ref=ocm.ComponentReference(
             name='delivery-service',
             componentName='ocm.software/ocm-gear/delivery-service',
             version=delivery_service_version,
@@ -125,7 +127,7 @@ def main():
 
     add_component_ref(
         component=component,
-        component_ref=cm.ComponentReference(
+        component_ref=ocm.ComponentReference(
             name='delivery-database',
             componentName='ocm.software/ocm-gear/delivery-database',
             version=delivery_database_version,
@@ -140,7 +142,7 @@ def main():
     with open(component_descriptor_path, 'w') as f:
         yaml.dump(
             data=dataclasses.asdict(component_descriptor),
-            Dumper=cm.EnumValueYamlDumper,
+            Dumper=ocm.EnumValueYamlDumper,
             stream=f,
         )
 
