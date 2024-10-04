@@ -53,14 +53,6 @@ internal:
   # - name: ...
   #   value: ...
 
-  # optional environment variables to configure uWSGI setup
-  # - name: UWSGI_MASTER
-  #   value: 1
-  # - name: UWSGI_PROCESSES
-  #   value: 1
-  # - name: UWSGI_THREADS
-  #   value: 20
-
   # features_cfg
   # further configuration to individualize the Delivery-Service backend
   features_cfg:
