@@ -45,6 +45,17 @@ def delivery_db_backup_cfg_if_specified(
     return None
 
 
+def prometheus_cfg_if_specified(
+    cfg_set: model.ConfigurationSet,
+) -> dict | None:
+    try:
+        return cfg_set.prometheus()
+    except:
+        logger.warning('prometheus cfg not found')
+
+    return None
+
+
 def extension_cfgs_if_specified(
     cfg_set: model.ConfigurationSet,
 ) -> tuple:
@@ -429,6 +440,11 @@ def main():
         ),
         out_file=os.path.join(out_dir, 'values-extensions.yaml'),
     )
+    if prometheus_cfg := prometheus_cfg_if_specified(cfg_set):
+        write_values_to_file(
+            helm_values=prometheus_cfg,
+            out_file=os.path.join(out_dir, 'values-prometheus.yaml'),
+        )
 
 
 if __name__ == '__main__':
