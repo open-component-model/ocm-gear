@@ -27,6 +27,7 @@ repo_dir = os.path.abspath(os.path.join(own_dir, os.pardir))
 delivery_service_versionfile = os.path.join(repo_dir, 'DELIVERY_SERVICE_VERSION')
 delivery_dashboard_versionfile = os.path.join(repo_dir, 'DELIVERY_DASHBOARD_VERSION')
 delivery_database_versionfile = os.path.join(repo_dir, 'DELIVERY_DATABASE_VERSION')
+prometheus_versionfile = os.path.join(repo_dir, 'PROMETHEUS_VERSION')
 
 installation_dir = os.path.join(repo_dir, 'installation')
 
@@ -101,6 +102,7 @@ def main():
     delivery_service_version = component_version_from_file(delivery_service_versionfile)
     delivery_dashboard_version = component_version_from_file(delivery_dashboard_versionfile)
     delivery_database_version = component_version_from_file(delivery_database_versionfile)
+    prometheus_version = component_version_from_file(prometheus_versionfile)
 
     component_descriptor = parse_component_descriptor()
     component = component_descriptor.component
@@ -131,6 +133,16 @@ def main():
             name='delivery-database',
             componentName='ocm.software/ocm-gear/delivery-database',
             version=delivery_database_version,
+            labels=[],
+        )
+    )
+
+    add_component_ref(
+        component=component,
+        component_ref=ocm.ComponentReference(
+            name='prometheus',
+            componentName='ocm.software/ocm-gear/prometheus',
+            version=prometheus_version,
             labels=[],
         )
     )

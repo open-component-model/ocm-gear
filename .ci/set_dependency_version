@@ -12,6 +12,7 @@ dependency_version = ci.util.check_env('DEPENDENCY_VERSION')
 delivery_service_versionfile = os.path.join(repo_dir, 'DELIVERY_SERVICE_VERSION')
 delivery_dashboard_versionfile = os.path.join(repo_dir, 'DELIVERY_DASHBOARD_VERSION')
 delivery_database_versionfile = os.path.join(repo_dir, 'DELIVERY_DATABASE_VERSION')
+prometheus_versionfile = os.path.join(repo_dir, 'PROMETHEUS_VERSION')
 
 
 def write_component_version_to_file(file_path: str):
@@ -26,6 +27,8 @@ def main():
         write_component_version_to_file(delivery_dashboard_versionfile)
     elif dependency_name == 'ocm.software/ocm-gear/delivery-database':
         write_component_version_to_file(delivery_database_versionfile)
+    elif dependency_name == 'ocm.software/ocm-gear/prometheus':
+        write_component_version_to_file(prometheus_versionfile)
     else:
         raise RuntimeError(f"Don't know how to upgrade dependency: {dependency_name}")
 
