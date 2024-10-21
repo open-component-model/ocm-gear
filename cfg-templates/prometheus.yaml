@@ -1,0 +1,33 @@
+# OPTIONAL
+# used to scrape exposed metrics (i.e. of delivery-service)
+# usage requires:
+# - removal of comment for entry "ocm_gear.prometheus" in "configs.yaml"
+
+internal:
+
+  # config
+  # configuration which is used as prometheus config file
+  # see https://prometheus.io/docs/prometheus/latest/configuration/configuration/ for more information
+  config: {}
+
+  # containerPort (optional)
+  containerPort: 9090
+
+  # servicePort (optional)
+  servicePort: 8080
+
+  # ingress (optional)
+  ingress:
+
+    # annotations (optional)
+    # annotations to be passed to the ingress resource
+    annotations: {}
+
+    # class (optional)
+    # ingress class used for the annotation "kubernetes.io/ingress.class", e.g. "nginx"
+    class: nginx
+
+    # hosts
+    # (internal and external) hostnames of the prometheus instance
+    hosts:
+    - ...

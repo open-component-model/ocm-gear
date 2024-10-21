@@ -102,3 +102,11 @@ ingress:
     factory_method: ingress
     cfg_type_name: ingress
     type: IngressConfig
+
+prometheus:
+  src:
+  - file: prometheus.yaml
+  model:
+    cfg_type_name: prometheus
+    factory_method: prometheus
+    type: NamedModelElement
