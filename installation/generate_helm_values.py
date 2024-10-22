@@ -47,7 +47,7 @@ def delivery_db_backup_cfg_if_specified(
 
 def prometheus_cfg_if_specified(
     cfg_set: model.ConfigurationSet,
-) -> dict | None:
+):
     try:
         return cfg_set.prometheus()
     except:
@@ -442,7 +442,7 @@ def main():
     )
     if prometheus_cfg := prometheus_cfg_if_specified(cfg_set):
         write_values_to_file(
-            helm_values=prometheus_cfg,
+            helm_values=prometheus_cfg.raw,
             out_file=os.path.join(out_dir, 'values-prometheus.yaml'),
         )
 
