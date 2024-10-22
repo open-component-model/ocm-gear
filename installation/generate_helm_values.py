@@ -355,6 +355,21 @@ def extensions_helm_values(
     return dict(iter_helm_values())
 
 
+def prometheus_helm_values(
+    cfg_set: model.ConfigurationSet,
+) -> dict | None:
+    if not (prometheus_cfg := prometheus_cfg_if_specified(cfg_set)):
+        return None
+
+    return {
+        **prometheus_cfg.raw,
+        'ingress': ingress_helm_values(
+            cfg=prometheus_cfg,
+            cfg_set=cfg_set,
+        ),
+    }
+
+
 def write_values_to_file(
     helm_values: dict,
     out_file: str,
@@ -440,9 +455,9 @@ def main():
         ),
         out_file=os.path.join(out_dir, 'values-extensions.yaml'),
     )
-    if prometheus_cfg := prometheus_cfg_if_specified(cfg_set):
+    if prometheus_values := prometheus_helm_values(cfg_set):
         write_values_to_file(
-            helm_values=prometheus_cfg.raw,
+            helm_values=prometheus_values,
             out_file=os.path.join(out_dir, 'values-prometheus.yaml'),
         )
 
