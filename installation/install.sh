@@ -178,7 +178,7 @@ helm upgrade -i extensions oci://${EXTENSIONS_CHART%:*} \
 
 if [ -f "${VALUES_DIR}/values-prometheus.yaml" ]; then
   echo ">>> Installing prometheus from ${PROMETHEUS_CHART}"
-  helm upgrade -i extensions oci://${PROMETHEUS_CHART%:*} \
+  helm upgrade -i prometheus oci://${PROMETHEUS_CHART%:*} \
     --namespace ${NAMESPACE} \
     --version ${PROMETHEUS_CHART#*:} \
     --values ${VALUES_DIR}/values-prometheus.yaml
