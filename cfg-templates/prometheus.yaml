@@ -5,16 +5,8 @@
 
 internal:
 
-  # config
-  # configuration which is used as prometheus config file
-  # see https://prometheus.io/docs/prometheus/latest/configuration/configuration/ for more information
-  config: {}
-
-  # containerPort (optional)
-  containerPort: 9090
-
-  # servicePort (optional)
-  servicePort: 8080
+  # scrapeInterval (optional)
+  scapeInterval: 15s
 
   # ingress (optional)
   ingress:

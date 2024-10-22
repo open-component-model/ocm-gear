@@ -355,7 +355,7 @@ def extensions_helm_values(
     return dict(iter_helm_values())
 
 
-def prometheus_helm_values(
+def prometheus_operator_helm_values(
     cfg_set: model.ConfigurationSet,
 ) -> dict | None:
     if not (prometheus_cfg := prometheus_cfg_if_specified(cfg_set)):
@@ -455,10 +455,10 @@ def main():
         ),
         out_file=os.path.join(out_dir, 'values-extensions.yaml'),
     )
-    if prometheus_values := prometheus_helm_values(cfg_set):
+    if prometheus_operator_values := prometheus_operator_helm_values(cfg_set):
         write_values_to_file(
-            helm_values=prometheus_values,
-            out_file=os.path.join(out_dir, 'values-prometheus.yaml'),
+            helm_values=prometheus_operator_values,
+            out_file=os.path.join(out_dir, 'values-prometheus-operator.yaml'),
         )
 
 

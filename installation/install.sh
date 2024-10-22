@@ -109,7 +109,7 @@ DELIVERY_SERVICE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.r
 DELIVERY_DASHBOARD_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-dashboard" and .type | test("helmChart")) | .access.imageReference')
 EXTENSIONS_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "extensions" and .type | test("helmChart")) | .access.imageReference')
 DELIVERY_DATABASE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "postgresql" and .type | test("helmChart")) | .access.imageReference')
-PROMETHEUS_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "prometheus" and .type | test("helmChart")) | .access.imageReference')
+PROMETHEUS_OPERATOR_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "prometheus-operator" and .type | test("helmChart")) | .access.imageReference')
 
 if [ ! -d "${VALUES_DIR}" ]; then
   echo ">>> Generating required helm values into ${VALUES_DIR}"
@@ -176,10 +176,15 @@ helm upgrade -i extensions oci://${EXTENSIONS_CHART%:*} \
   --version ${EXTENSIONS_CHART#*:} \
   --values ${VALUES_DIR}/values-extensions.yaml
 
-if [ -f "${VALUES_DIR}/values-prometheus.yaml" ]; then
-  echo ">>> Installing prometheus from ${PROMETHEUS_CHART}"
-  helm upgrade -i prometheus oci://${PROMETHEUS_CHART%:*} \
+if [ -f "${VALUES_DIR}/values-prometheus-operator.yaml" ]; then
+  echo ">>> Installing prometheus-operator crds"
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo update
+  helm upgrade -i prometheus-operator-crds prometheus-community/prometheus-operator-crds
+
+  echo ">>> Installing prometheus-operator from ${PROMETHEUS_OPERATOR_CHART}"
+  helm upgrade -i prometheus-operator oci://${PROMETHEUS_OPERATOR_CHART%:*} \
     --namespace ${NAMESPACE} \
-    --version ${PROMETHEUS_CHART#*:} \
-    --values ${VALUES_DIR}/values-prometheus.yaml
+    --version ${PROMETHEUS_OPERATOR_CHART#*:} \
+    --values ${VALUES_DIR}/values-prometheus-operator.yaml
 fi
