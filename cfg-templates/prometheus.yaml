@@ -23,3 +23,8 @@ internal:
     # (internal and external) hostnames of the prometheus instance
     hosts:
     - ...
+
+    # tls_host_names
+    # list of hostnames tls should be configured for
+    tls_host_names:
+    - ...

@@ -19,4 +19,4 @@ Following, a rough overview:
 | `delivery.yaml` | [REQUIRED] Configuration of OAuth related aspects for Delivery-Service |
 | `elasticsearch.yaml` | [OPTIONAL] If configured, logs certain events to Elasticsearch |
 | `github.yaml` | [OPTIONAL] Required by certain features interacting with GitHub |
-| `ingress.yaml` | [REQUIRED] Configure TLS ingress settings |
+| `prometheus.yaml` | [OPTIONAL] Used to configure Prometheus to scrape exposed metrics |

@@ -6,7 +6,6 @@ ocm_gear:
   delivery_service: internal
   delivery: internal
   delivery_endpoints: internal
-  ingress: internal
   cfg_set: delivery_service
   # To enable delivery gear extensions (e.g. bdba, issue-replicator), uncomment below:
   # delivery_gear_extensions: internal

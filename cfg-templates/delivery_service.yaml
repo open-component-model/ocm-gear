@@ -42,6 +42,11 @@ internal:
     hosts:
     - ...
 
+    # tls_host_names
+    # list of hostnames tls should be configured for
+    tls_host_names:
+    - ...
+
   # protocol
   # protocol the Delivery-Dashboard uses to connect to the Delivery-Service
   # selection of {"https", "http"}

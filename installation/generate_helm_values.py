@@ -109,14 +109,13 @@ def pod_helm_values(
 
 
 def ingress_helm_values(
-    cfg,
-    cfg_set: model.ConfigurationSet,
+    ingress_cfg: dict,
 ) -> dict:
     return {
-        'annotations': cfg.ingress().get('annotations', dict()),
-        'class': cfg.ingress().get('class', 'nginx'),
-        'hosts': cfg.ingress().get('hosts', []),
-        'tlsHostNames': cfg_set.ingress().tls_host_names(),
+        'annotations': ingress_cfg.get('annotations', dict()),
+        'class': ingress_cfg.get('class', 'nginx'),
+        'hosts': ingress_cfg.get('hosts', []),
+        'tlsHostNames': ingress_cfg.get('tls_host_names', []),
     }
 
 
@@ -203,10 +202,7 @@ def delivery_service_helm_values(
         'pod': pod_helm_values(
             cfg=delivery_service_cfg,
         ),
-        'ingress': ingress_helm_values(
-            cfg=delivery_service_cfg,
-            cfg_set=cfg_set,
-        ),
+        'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
         'replicas': delivery_service_cfg.replicas(),
         'featuresCfg': delivery_service_cfg.features_cfg(),
         'createCfgFactorySecret': create_cfg_factory,
@@ -257,10 +253,7 @@ def delivery_dashboard_helm_values(
         'pod': pod_helm_values(
             cfg=delivery_dashboard_cfg,
         ),
-        'ingress': ingress_helm_values(
-            cfg=delivery_dashboard_cfg,
-            cfg_set=cfg_set,
-        ),
+        'ingress': ingress_helm_values(delivery_dashboard_cfg.ingress()),
         'replicas': delivery_dashboard_cfg.replicas(),
     }
 
@@ -363,10 +356,7 @@ def prometheus_operator_helm_values(
 
     return {
         **prometheus_cfg.raw,
-        'ingress': ingress_helm_values(
-            cfg=prometheus_cfg,
-            cfg_set=cfg_set,
-        ),
+        'ingress': ingress_helm_values(prometheus_cfg.ingress()),
     }
 
 
