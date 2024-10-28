@@ -204,7 +204,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: ingress-nginx
   endpoints:
-    - port: prometheus
+    - port: metrics
       interval: 15s" | kubectl apply --namespace=${INGRESS_NAMESPACE} -f -
   fi
 fi
