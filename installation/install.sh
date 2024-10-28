@@ -133,7 +133,10 @@ if [ -n "${INSTALL_INGRESS_CONTROLLER}" ]; then
   helm repo update
   helm upgrade -i ingress-nginx ingress-nginx/ingress-nginx \
     --namespace ${INGRESS_NAMESPACE} \
-    --set externalTrafficPolicy=Cluster
+    --set externalTrafficPolicy=Cluster \
+    --set controller.metrics.enabled=true \
+    --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
+    --set-string controller.podAnnotations."prometheus\.io/port"="10254"
   echo ">>> Waiting for ingress nginx controller to become ready, this can take up to 90 seconds..."
   kubectl wait \
     --namespace ${INGRESS_NAMESPACE} \
@@ -187,4 +190,21 @@ if [ -f "${VALUES_DIR}/values-prometheus-operator.yaml" ]; then
     --namespace ${NAMESPACE} \
     --version ${PROMETHEUS_OPERATOR_CHART#*:} \
     --values ${VALUES_DIR}/values-prometheus-operator.yaml
+
+  if [ -n "${INSTALL_INGRESS_CONTROLLER}" ]; then
+    echo ">>> Creating service monitor for ingress nginx controller"
+    echo "apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ingress-nginx
+  labels:
+    app: prometheus
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+  endpoints:
+    - port: prometheus
+      interval: 15s" | kubectl apply --namespace=${INGRESS_NAMESPACE} -f -
+  fi
 fi
