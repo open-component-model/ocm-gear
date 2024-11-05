@@ -48,17 +48,6 @@ internal:
             # selection of {"include", "exclude"}
             matching_semantics: ...
 
-    # cve_rescoring_rules (optional)
-    # rescoring rules are used for auto rescoring in bdba and proposed rescorings in issue-replicator
-    cve_rescoring_rules:
-      - category_value: ...
-        rules:
-          - cve_values:
-              - ...
-            # rescore
-            # selection of {"no-change", "reduce", "not-exploitable"}
-            rescore: ...
-
     # prohibited_licenses (optional)
     # list of licenses which are prohibited and should be reported
     prohibited_licenses: []
@@ -214,18 +203,6 @@ internal:
             # selection of {"include", "exclude"}
             matching_semantics: ...
 
-    # cve_rescoring_rules (optional)
-    # rescoring rules are applied to automatically rescore findings below `auto_assess_max_severity`
-    cve_rescoring_rules:
-      - category_value: ...
-        rules:
-          - cve_values:
-              - ...
-            # rescore
-            # selection of {"no-change", "reduce", "not-exploitable"}
-            rescore: ...
-
-    # auto_assess_max_severity (required if cve_rescoring_rules are set)
     # selection of {"NONE", "LOW ", "MEDIUM", "HIGH", "CRITICAL"}
     # only findings below this severity will be automatically rescored
     auto_assess_max_severity: ...
@@ -323,17 +300,6 @@ internal:
             # matching_semantics
             # selection of {"include", "exclude"}
             matching_semantics: ...
-
-    # cve_rescoring_rules (optional)
-    # rescoring rules are used for proposed rescorings
-    cve_rescoring_rules:
-      - category_value: ...
-        rules:
-          - cve_values:
-              - ...
-            # rescore
-            # selection of {"no-change", "reduce", "not-exploitable"}
-            rescore: ...
 
     # finding_type_issue_replication_configs
     # finding type specific configuration; adding a finding type here will enable the issue replication
