@@ -303,21 +303,28 @@ def extensions_helm_values(
         freshclam_enabled = 'clamav' in extensions
 
         delivery_service_cfg = cfg_set.delivery_service()
+        rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring')
 
-        # inject rescoring cfg from delivery-service cfg to avoid duplication
-        rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring', {})
-        if rescoring_cfg:
-            rescoring_cfg = {'rescoring': rescoring_cfg}
+        def iter_scan_cfgs(
+            extension_cfgs: collections.abc.Iterable[model.NamedModelElement],
+            rescoring_cfg: dict | None,
+        ) -> collections.abc.Generator[dict, None, None]:
+            for extension_cfg in extension_cfgs:
+                if rescoring_cfg:
+                    # inject rescoring-cfg to avoid duplication
+                    extension_cfg.raw['defaults']['rescoring'] = rescoring_cfg
+                yield {
+                    'name': extension_cfg.name(),
+                    'spec': extension_cfg.raw,
+                }
 
         configuration = {
             'scanConfigurations': [
-                {
-                    'name': normalize_name(extension_cfg.name()),
-                    'spec': dict(
-                        **extension_cfg.raw,
-                        **rescoring_cfg,
-                    ),
-                } for extension_cfg in extension_cfgs
+                scan_cfg
+                for scan_cfg in iter_scan_cfgs(
+                    extension_cfgs=extension_cfgs,
+                    rescoring_cfg=rescoring_cfg,
+                )
             ],
         }
         yield 'configuration', configuration
