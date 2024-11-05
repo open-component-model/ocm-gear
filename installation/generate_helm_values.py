@@ -302,11 +302,21 @@ def extensions_helm_values(
         delivery_db_backup_enabled = 'deliveryDbBackup' in extensions
         freshclam_enabled = 'clamav' in extensions
 
+        delivery_service_cfg = cfg_set.delivery_service()
+
+        # inject rescoring cfg from delivery-service cfg to avoid duplication
+        rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring', {})
+        if rescoring_cfg:
+            rescoring_cfg = {'rescoring': rescoring_cfg}
+
         configuration = {
             'scanConfigurations': [
                 {
                     'name': normalize_name(extension_cfg.name()),
-                    'spec': extension_cfg.raw,
+                    'spec': dict(
+                        **extension_cfg.raw,
+                        **rescoring_cfg,
+                    ),
                 } for extension_cfg in extension_cfgs
             ],
         }
