@@ -314,7 +314,7 @@ def extensions_helm_values(
                     # inject rescoring-cfg to avoid duplication
                     extension_cfg.raw['defaults']['rescoring'] = rescoring_cfg
                 yield {
-                    'name': extension_cfg.name(),
+                    'name': normalize_name(extension_cfg.name()),
                     'spec': extension_cfg.raw,
                 }
 
