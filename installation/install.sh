@@ -56,7 +56,7 @@ parse_flags() {
 
 parse_kubeconfig() {
   if [ -n "${KUBERNETES_CFG_NAME}" ]; then
-    cli.py config export_kubeconfig --kubernetes-config-name ${KUBERNETES_CFG_NAME} --output-file "${OWN_DIR}/kubeconfig.yaml"
+    gardener-ci config export_kubeconfig --kubernetes-config-name ${KUBERNETES_CFG_NAME} --output-file "${OWN_DIR}/kubeconfig.yaml"
     export KUBECONFIG="${OWN_DIR}/kubeconfig.yaml"
   fi
 }
