@@ -321,20 +321,6 @@ internal:
       # python regex string to identify UPRs if identificationMethod is set to "title"
       titleRegex: ...
 
-    # issues
-    # if issues of a component should be displayed in the dashboard, they have to be added to this configuration
-    issues:
-
-      # issueRepoMappings
-      # list of mappings of component names and the corresponding repo to lookup issues
-      issueRepoMappings: []
-
-        # repoName
-      # - componentName: ...
-
-        # issueRepo
-        # repoName: ...
-
     # versionFilter (optional)
     # selection of {"all", "releases_only"}
     # specifies the behaviour which versions should be included when resolving the version

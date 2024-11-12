@@ -10,4 +10,3 @@ Following features are available:
 | Rescoring | `rescoring` | tbd, see inline |
 | Sprint Integration | `yellowPagesRepoUrl` <br/> `sprintEventNameMappings` | tbd, see inline <br/> tbd, see inline
 | Download Test Results for Component | `tests` | tbd, see inline |
-| Issue Integration | `issues` | tbd, see inline |
