@@ -375,3 +375,8 @@ internal:
     # setting this parameter to a value > 0 enables the removal of old backups
     # only the last <backup_retention_count> backups are kept
     backup_retention_count: 0
+
+    # initial_version (optional)
+    # specify initial (semver) version for delivery-db-backup ocm component-descriptor
+    # bump-minor is used to determine next version
+    initial_version: '0.1.0'
