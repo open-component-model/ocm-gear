@@ -34,6 +34,17 @@ def delivery_db_cfg_if_specified(
     return None
 
 
+def cache_manager_cfg_if_specified(
+    extension_cfg,
+):
+    try:
+        return extension_cfg.cacheManager()
+    except:
+        logger.warning('cache-manager cfg not found')
+
+    return None
+
+
 def delivery_db_backup_cfg_if_specified(
     extension_cfg,
 ):
@@ -81,6 +92,8 @@ def enabled_extensions(
         if extension_cfg.raw.get('clamav'):
             enabled_extensions.add('backlogController')
             enabled_extensions.add('clamav')
+        if extension_cfg.raw.get('cacheManager'):
+            enabled_extensions.add('cacheManager')
         if extension_cfg.raw.get('deliveryDbBackup'):
             enabled_extensions.add('deliveryDbBackup')
         if extension_cfg.raw.get('issueReplicator'):
@@ -270,6 +283,31 @@ def extensions_helm_values(
     extension_cfgs = extension_cfgs_if_specified(
         cfg_set=cfg_set,
     )
+    delivery_service_cfg = cfg_set.delivery_service()
+
+    def iter_cache_manager_cfg(
+        extension_cfg_name: str,
+        cache_manager_cfg: dict,
+    ):
+        yield 'envVars', {
+            'CFG_NAME': extension_cfg_name,
+            'INVALID_SEMVER_OK': bool(delivery_service_cfg.invalid_semver_ok()),
+            **env_vars,
+        }
+        yield 'schedule', cache_manager_cfg.get('schedule')
+        yield 'successfulJobsHistoryLimit', cache_manager_cfg.get('successfulJobsHistoryLimit')
+        yield 'failedJobsHistoryLimit', cache_manager_cfg.get('failedJobsHistoryLimit')
+
+    cache_manager_cfgs = [
+        dict(
+            iter_cache_manager_cfg(
+                extension_cfg_name=normalize_name(extension_cfg.name()),
+                cache_manager_cfg=cache_manager_cfg,
+            ),
+        )
+        for extension_cfg in extension_cfgs
+        if (cache_manager_cfg := cache_manager_cfg_if_specified(extension_cfg))
+    ]
 
     def iter_delivery_db_backup_cfg(extension_cfg):
         db_backup_cfg = delivery_db_backup_cfg_if_specified(extension_cfg)
@@ -299,10 +337,10 @@ def extensions_helm_values(
 
         artefact_enumerator_enabled = 'artefactEnumerator' in extensions
         backlog_controller_enabled = 'backlogController' in extensions
+        cache_manager_enabled = 'cacheManager' in extensions
         delivery_db_backup_enabled = 'deliveryDbBackup' in extensions
         freshclam_enabled = 'clamav' in extensions
 
-        delivery_service_cfg = cfg_set.delivery_service()
         rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring')
 
         def iter_scan_cfgs(
@@ -348,6 +386,13 @@ def extensions_helm_values(
                 'namespace': namespace,
             }
             yield 'backlog-controller', backlog_controller
+
+        if cache_manager_enabled:
+            cache_manager = {
+                'enabled': True,
+                'configurations': cache_manager_cfgs,
+            }
+            yield 'cache-manager', cache_manager
 
         if delivery_db_backup_enabled:
             delivery_db_backup = {
