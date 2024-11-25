@@ -295,8 +295,8 @@ def extensions_helm_values(
             **env_vars,
         }
         yield 'schedule', cache_manager_cfg.get('schedule')
-        yield 'successfulJobsHistoryLimit', cache_manager_cfg.get('successfulJobsHistoryLimit')
-        yield 'failedJobsHistoryLimit', cache_manager_cfg.get('failedJobsHistoryLimit')
+        yield 'successfulJobsHistoryLimit', cache_manager_cfg.get('successful_jobs_history_limit')
+        yield 'failedJobsHistoryLimit', cache_manager_cfg.get('failed_jobs_history_limit')
 
     cache_manager_cfgs = [
         dict(

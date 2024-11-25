@@ -334,6 +334,96 @@ internal:
 #       enable_issue_assignees: ...
 #       enable_issue_per_finding: True
 
+  # cacheManager (optional)
+  # Specific configuration which is only used by the cacheManager extensions.
+  cacheManager:
+
+    # delivery_db_cfg_name (required)
+    # Reference of the delivery-db configuration by name.
+    delivery_db_cfg_name: internal
+
+    # max_cache_size_bytes (optional)
+    # The maximum allowed size of the cache entries. If this size is exceeded, the cache manager job
+    # will prune the cache until `min_pruning_bytes` are available again.
+    max_cache_size_bytes: 1000000000 # 1Gb
+
+    # min_pruning_bytes (optional)
+    min_pruning_bytes: 100000000 # 100Mb
+
+    # cache_pruning_weights (optional)
+    # The individual weights determine how much the respective values are being considered when
+    # determining those cache entries which should be deleted next (in case `max_cache_size_bytes`
+    # is reached). The greater the weight, the less likely an entry will be considered for deletion.
+    # Negative values may be also used to express a property which determines that an entry should
+    # be deleted. 0 means the property does not affect the priority for the next deletion.
+    cache_pruning_weights:
+      creation_date_weight: 0
+      last_update_weight: 0
+      delete_after_weight: -1.5 # deletion (i.e. stale) flag -> delete
+      keep_until_weight: -1 # `keep_until` has passed -> delete
+      last_read_weight: -1 # long time no read -> delete
+      read_count_weight: 10 # has many reads -> rather not delete
+      revision_weight: 0
+      costs_weight: 10 # is expensive to re-calculate -> rather not delete
+      size_weight: 0
+
+    # prefill_function_caches (optional)
+    # Configures components for which to pre-calculate and cache the desired functions. If no
+    # specific functions are set, all available functions will be considered.
+    prefill_function_caches:
+
+      # components (required)
+      # List of components for which to pre-calculate the configured functions.
+      components:
+
+          # component_name (required)
+          # Name of the component as it is declared in its component descriptor.
+        - component_name: ...
+
+          # version (optional)
+          # Specifies the version which should be used. If not set or set to "greatest", it will
+          # always reference the greatest version.
+          version: greatest
+
+          # version_filter (optional)
+          # selection of {"all", "releases_only"}
+          # Specifies the behaviour which versions should be included when resolving the version
+          # alias "greatest". If not set it defaults to the global configuration of the
+          # delivery-service.
+          version_filter: ~
+
+          # max_versions_limit (optional)
+          # Number of versions that should be tracked. If version is set to a constant version, the
+          # "n" greatest versions up to this version will be tracked.
+          max_versions_limit: 1
+
+          # ocm_repo (optional)
+          # Url of the repository in which this component is stored. If not set, the ocm repo
+          # mapping of the delivery-service is used.
+          ocm_repo: ~
+
+      # functions (optional)
+      # selection of {"compliance-summary", "component-versions"} -> note: this set is subject to
+      # changes in future versions. See delivery-service's config.py -> `FunctionNames` for a list
+      # of all available functions.
+      # List of function name for which to pre-calculate the cache entries. If omitted, all
+      # available functions will be considered.
+      functions:
+        - ...
+
+    # schedule (optional)
+    # Cron syntax to specify cacheManager execution schedule.
+    schedule: 0 * * * * # every hour
+
+    # successful_jobs_history_limit (optional)
+    # Specifies how many completed jobs should be kept. Setting the limit to 0 corresponds to
+    # keeping none of the jobs after they have finished.
+    successful_jobs_history_limit: 1
+
+    # failed_jobs_history_limit (optional)
+    # Specifies how many failed jobs should be kept.
+    failed_jobs_history_limit: 1
+
   # deliveryDbBackup
   # specific configuration which is only used by the deliveryDbBackup extensions
   deliveryDbBackup:
