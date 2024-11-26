@@ -17,6 +17,5 @@ Following, a rough overview:
 | `delivery_gear_extensions.yaml` | [OPTIONAL] used for available extensions, e.g. bdba-scans and issue-replicator |
 | `delivery_service.yaml` | [REQUIRED] Delivery-Service specific configuration like ingress-class and hostname <br/> Also configure active features (see Section [Features](./features.md)) |
 | `delivery.yaml` | [REQUIRED] Configuration of OAuth related aspects for Delivery-Service |
-| `elasticsearch.yaml` | [OPTIONAL] If configured, logs certain events to Elasticsearch |
 | `github.yaml` | [OPTIONAL] Required by certain features interacting with GitHub |
 | `prometheus.yaml` | [OPTIONAL] Used to configure Prometheus to scrape exposed metrics |

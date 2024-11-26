@@ -79,14 +79,6 @@ delivery:
     factory_method: delivery
     type: DeliveryConfig
 
-elasticsearch:
-  src:
-  - file: elasticsearch.yaml
-  model:
-    factory_method: elasticsearch
-    cfg_type_name: elasticsearch
-    type: ElasticSearchConfig
-
 github:
   src:
   - file: github.yaml
