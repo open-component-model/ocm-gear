@@ -291,12 +291,18 @@ def extensions_helm_values(
     ):
         yield 'envVars', {
             'CFG_NAME': extension_cfg_name,
-            'INVALID_SEMVER_OK': bool(delivery_service_cfg.invalid_semver_ok()),
             **env_vars,
         }
         yield 'schedule', cache_manager_cfg.get('schedule')
         yield 'successfulJobsHistoryLimit', cache_manager_cfg.get('successful_jobs_history_limit')
         yield 'failedJobsHistoryLimit', cache_manager_cfg.get('failed_jobs_history_limit')
+
+        args = []
+
+        if delivery_service_cfg.invalid_semver_ok():
+            args.append('--invalid-semver-ok')
+
+        yield 'args', args
 
     cache_manager_cfgs = [
         dict(
