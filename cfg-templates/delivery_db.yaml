@@ -34,3 +34,19 @@ internal:
     # check tags at: https://hub.docker.com/r/bitnami/postgresql/tags
     image:
       tag: 16.0.0
+
+    # postgresqlMaxConnections
+    # maximum total connections
+    # -> see [documentation](https://github.com/bitnami/charts/blob/b30ed79c67750b9d74de1fcb30ba0b51508d5035/bitnami/postgresql/values.yaml#L353)
+    #
+    # Note: SQLAlchemy, which is used by the delivery-service + cache-manager, already allows
+    # handling of load peaks by configuring `max_overflow` for queue pools. By default (which is
+    # being used), a queue pool has a `pool_size` of 5, which means that, once established, 5
+    # connections will be kept permanently. By configuring `max_overflow` (defaults to 10), extra
+    # connections can be created to handle load peaks (those will be closed afterwards again)
+    # -> see [documentation](https://docs.sqlalchemy.org/en/20/core/pooling.html#sqlalchemy.pool.QueuePool.params.pool_size)
+    # Example: If there are 8 delivery-service pods (this will change with autoscaling, but within a
+    # configurable window), there are 8 * 5 open connection at any time, and up to 8 * (5 + 10)
+    # during peaks. This must not exceed the configured connection limit here of PostgreSQL, as
+    # otherwise operational exceptions may occur.
+    postgresqlMaxConnections: 100
