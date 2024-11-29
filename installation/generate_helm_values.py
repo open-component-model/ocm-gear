@@ -121,6 +121,15 @@ def pod_helm_values(
     }
 
 
+def autoscaler_helm_values(
+    cfg,
+) -> dict:
+    try:
+        return cfg.autoscaler()
+    except:
+        return dict()
+
+
 def ingress_helm_values(
     ingress_cfg: dict,
 ) -> dict:
@@ -215,6 +224,7 @@ def delivery_service_helm_values(
         'pod': pod_helm_values(
             cfg=delivery_service_cfg,
         ),
+        'autoscaler': autoscaler_helm_values(delivery_service_cfg),
         'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
         'replicas': delivery_service_cfg.replicas(),
         'featuresCfg': delivery_service_cfg.features_cfg(),
