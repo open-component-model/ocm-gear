@@ -50,15 +50,7 @@ check_required_flags() {
 parse_flags "$@"
 check_required_flags HOST PORT DATABASE PGUSER PGPASSWORD
 
-if ! which psql 1>/dev/null; then
-  echo ">>> Installing postgresql-client..."
-  if ! which apk 1>/dev/null; then
-    echo "Apk is not available, you'll have to install the postgresql-client manually."
-    exit 1
-  fi
-  apk add postgresql-client
-  echo ">>> Installed postgresql-client in version $(psql --version)"
-fi
+${own_dir}/install_dependencies.sh
 
 id_datatype=$(PGPASSWORD=${PGPASSWORD} psql \
   -h $HOST \

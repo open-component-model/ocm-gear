@@ -1,0 +1,3 @@
+gardener-cicd-libs
+psycopg[binary]
+sqlalchemy
