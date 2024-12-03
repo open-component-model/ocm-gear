@@ -208,3 +208,8 @@ spec:
       interval: 15s" | kubectl apply --namespace=${INGRESS_NAMESPACE} -f -
   fi
 fi
+
+echo ">>> Going to attempt db-migration (if necessary)"
+PGPASSWORD=$(cat ${VALUES_DIR}/values-delivery-db.yaml | yq .postgresqlPassword)
+kubectl port-forward delivery-db-0 5430:5432 --namespace ${NAMESPACE}
+${OWN_DIR}/db_migration/migrate.sh --pgpassword ${PGPASSWORD}
