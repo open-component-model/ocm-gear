@@ -211,5 +211,5 @@ fi
 
 echo ">>> Going to attempt db-migration (if necessary)"
 PGPASSWORD=$(cat ${VALUES_DIR}/values-delivery-db.yaml | yq .postgresqlPassword)
-kubectl port-forward delivery-db-0 5430:5432 --namespace ${NAMESPACE}
+kubectl port-forward delivery-db-0 5430:5432 --namespace ${NAMESPACE} > /dev/null &
 ${OWN_DIR}/db_migration/migrate.sh --pgpassword ${PGPASSWORD}
