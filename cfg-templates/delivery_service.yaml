@@ -225,9 +225,17 @@ internal:
     # rule sets are used for the manual rescoring of compliance scan results
     rescoring:
 
-      # defaultRuleSetName
-      # the name of the default rule set specified in rescoringRuleSets
-      defaultRuleSetName: ...
+      # defaultRuleSetNames
+      # the names of the default rule set specified in rescoringRuleSets
+      defaultRuleSetNames:
+
+      # name
+      # the name of the default rule set
+      - name: ...
+
+        # type
+        # type of the default rule set
+        type: ...
 
       # rescoringRuleSets
       # list of rule sets
@@ -237,13 +245,17 @@ internal:
         # the name of the rule set
       - name: ...
 
+        # type
+        # type of the rule set
+        type: ...
+
         # description
         # url to a more detailed description of this rule set
         description: ...
 
-        # rule_set
+        # rules
         # list of the actual assignment of category values and their rescoring rules
-        rule_set:
+        rules:
         - category_value: ...
           rules:
           - cve_values:
