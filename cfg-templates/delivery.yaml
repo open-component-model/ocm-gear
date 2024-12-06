@@ -2,62 +2,71 @@
 # must match with reference in configs.yaml
 internal:
 
-  # auth
-  # configuration of oauth
-  auth:
+  # oauth_cfgs
+  # list of oauth configurations
+  oauth_cfgs:
 
-    # oauth_cfgs
-    # list of oauth configurations
-    oauth_cfgs:
+    # name
+    # name of the configuration
+  - name: ...
 
-      # name
-      # name of the configuration
-    - name: ...
+    # type
+    # type of the oauth configuration
+    # selection of {"github"}
+    type: github
 
-      # type
-      # type of the oauth configuration
-      # selection of {"github"}
-      type: github
+    # github_cfg
+    # the name of the config element in github.yaml which should be used for this authentication
+    github_cfg: internal
 
-      # github_cfg
-      # the name of the config element in github.yaml which should be used for this authentication
-      github_cfg: internal
+    # oauth_url
+    oauth_url: https://github.com/login/oauth/authorize
 
-      # oauth_url
-      oauth_url: https://github.com/login/oauth/authorize
+    # token_url
+    token_url: https://github.com/login/oauth/access_token
 
-      # token_url
-      token_url: https://github.com/login/oauth/access_token
+    # client_id
+    client_id: ...
 
-      # client_id
-      client_id: ...
+    # client_secret
+    client_secret: ...
 
-      # client_secret
-      client_secret: ...
+    # role_bindings
+    # fine-granular access control
+    role_bindings:
 
-  # service
-  # configuration used for signing in the Delivery-Service
-  service:
+    - subjects:
 
-    # signing
-    # list of signing keys
-    signing:
+      - type: github-user # "github-user", "github-org", "github-team"
+        name: ... # actual value to check against
 
-      # id
-      # id of the signing key
-    - id: 1
+      # currently supported roles: "admin"
+      roles:
+      - admin
 
-      # algorithm
-      # algorithm used for signing
-      algorithm: RS256
+  # signing_cfgs
+  # list of signing keys
+  signing_cfgs:
 
-      # secret
-      # if algorithm "RS256" is selected, this is the private key
-      secret: |-
-        -----BEGIN RSA PRIVATE KEY-----
-        -----END RSA PRIVATE KEY-----
+    # id
+    # id of the signing key
+  - id: 1
 
-      # public_key
-      public_key: |-
-        -----BEGIN PUBLIC KEY-----
-        -----END PUBLIC KEY-----
+    # algorithm
+    # algorithm used for signing
+    algorithm: RS256
+
+    # secret
+    # if algorithm "RS256" is selected, this is the private key
+    private_key: |-
+      -----BEGIN RSA PRIVATE KEY-----
+      -----END RSA PRIVATE KEY-----
+
+    # public_key
+    public_key: |-
+      -----BEGIN PUBLIC KEY-----
+      -----END PUBLIC KEY-----
+
+    # priority
+    # integer value, default to `0`; higher value means higher priority
+    priority: ...
