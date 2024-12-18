@@ -73,11 +73,15 @@ def ocm_repository_lookup():
 
 
 def main():
+    oci_client = ccc.oci.oci_client()
     component_descriptor_lookup = cnudie.retrieve.create_default_component_descriptor_lookup(
         ocm_repository_lookup=ocm_repository_lookup(),
-        oci_client=ccc.oci.oci_client(),
+        oci_client=oci_client,
     )
-    version_lookup = cnudie.retrieve.version_lookup(ocm_repository_lookup=ocm_repository_lookup())
+    version_lookup = cnudie.retrieve.version_lookup(
+        ocm_repository_lookup=ocm_repository_lookup(),
+        oci_client=oci_client,
+    )
 
     current_descriptor = parse_component_descriptor()
     latest_descriptor = retrieve_latest_released_descriptor(
