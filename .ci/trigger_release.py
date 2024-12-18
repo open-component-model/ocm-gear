@@ -6,6 +6,7 @@ import os
 import yaml
 
 import ccc.concourse
+import ccc.oci
 import ci.log
 import ci.util
 import cnudie.retrieve
@@ -74,6 +75,7 @@ def ocm_repository_lookup():
 def main():
     component_descriptor_lookup = cnudie.retrieve.create_default_component_descriptor_lookup(
         ocm_repository_lookup=ocm_repository_lookup(),
+        oci_client=ccc.oci.oci_client(),
     )
     version_lookup = cnudie.retrieve.version_lookup(ocm_repository_lookup=ocm_repository_lookup())
 
