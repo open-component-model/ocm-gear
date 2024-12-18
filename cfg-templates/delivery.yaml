@@ -49,8 +49,8 @@ internal:
   signing_cfgs:
 
     # id
-    # id of the signing key
-  - id: 1
+    # id of the signing key, must be of type str
+  - id: "foobar"
 
     # algorithm
     # algorithm used for signing
