@@ -226,7 +226,6 @@ def delivery_service_helm_values(
         ),
         'autoscaler': autoscaler_helm_values(delivery_service_cfg),
         'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
-        'replicas': delivery_service_cfg.replicas(),
         'featuresCfg': delivery_service_cfg.features_cfg(),
         'createCfgFactorySecret': create_cfg_factory,
     }
