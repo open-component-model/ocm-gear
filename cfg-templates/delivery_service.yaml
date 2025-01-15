@@ -6,9 +6,39 @@ internal:
   # whether to ignore invalid (semver) version(s) when resolving "greatest" component-version
   invalid_semver_ok: True
 
-  # replicas
-  # amount of delivery-service relicas
-  replicas: 3
+  # autoscaler
+  # configuration for the horizontal pod autoscaler (hpa)
+  autoscaler:
+
+    # annotations
+    # annotations to be passed to the hpa resource
+    # object consisting of key/value-pairs
+    annotations: {}
+
+    # labels
+    # labels to be passed to the hpa resource
+    # object consisting of key/value-pairs
+    labels: {}
+
+    # minReplicas
+    # minimum number of allowed delivery-service replicas
+    minReplicas: 1
+
+    # maxReplicas
+    # maximum number of allowed delivery-service replicas
+    maxReplicas: 30
+
+    # targetUtilisation
+    # average cpu utilisation which is used as trigger for autoscaling
+    targetUtilisation: 80
+
+    # scaleDownStabilizationWindowSeconds
+    # scale down depending on the average utilisation in the last X seconds
+    scaleDownStabilizationWindowSeconds: 120
+
+    # scaleUpStabilizationWindowSeconds
+    # scale up depending on the average utilisation in the last X seconds
+    scaleUpStabilizationWindowSeconds: 0
 
   # pod
   # object consisting of key/value-pairs to customize the pod (template)
