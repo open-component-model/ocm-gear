@@ -16,7 +16,6 @@ $ ./deploy_ocm_gear.sh [<options>]
 | :----- | :---------- | :------ | :------: |
 | --cfg-dir | path to directory containing configuration files | `./cfg` | x |
 | --cfg-set | cfg set from `configs.yaml` to use for installation | `ocm_gear` | x |
-| --create-cfg-factory | deploy secret containing configuration and credentials from `--cfg-dir` to target namespace | | |
 | --ingress-namespace | namespace to deploy the ingress controller into (only used if `--install-ingress-controller` is set | `ingress-nginx` | |
 | --install-ingress-controller | deploy nginx controller to `--ingress-namespace` during installation | | |
 | --kubeconfig | path to kubeconfig of target cluster | | x |
@@ -30,6 +29,5 @@ $ ./deploy_ocm_gear.sh [<options>]
 ```
 $ ./deploy_ocm_gear.sh \
     --kubeconfig ./kubeconfig.yaml \
-    --create-cfg-factory \
     --install-ingress-controller
 ```

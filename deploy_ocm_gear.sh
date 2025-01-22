@@ -6,7 +6,6 @@ OWN_DIR=$(readlink -f "$(dirname "${0}")")
 
 CFG_DIR="${OWN_DIR}/cfg"
 CFG_SET="ocm_gear"
-CREATE_CFG_FACTORY=""
 INGRESS_NAMESPACE=ingress-nginx
 INSTALL_INGRESS_CONTROLLER=""
 KUBECONFIG=""
@@ -23,9 +22,6 @@ parse_flags() {
       ;;
     --cfg-set)
       shift; CFG_SET="$1"
-      ;;
-    --create-cfg-factory)
-      CREATE_CFG_FACTORY=true
       ;;
     --ingress-namespace)
       shift; INGRESS_NAMESPACE="$1"
@@ -67,7 +63,6 @@ tar -xzf "${OWN_DIR}/resource-installation"
 ${OWN_DIR}/installation/install.sh \
   ${CFG_DIR:+"--cfg-dir"} ${CFG_DIR:+${CFG_DIR}} \
   ${CFG_SET:+"--cfg-set"} ${CFG_SET:+${CFG_SET}} \
-  ${CREATE_CFG_FACTORY:+"--create-cfg-factory"} \
   ${INGRESS_NAMESPACE:+"--ingress-namespace"} ${INGRESS_NAMESPACE:+${INGRESS_NAMESPACE}} \
   ${INSTALL_INGRESS_CONTROLLER:+"--install-ingress-controller"} \
   ${KUBECONFIG:+"--kubeconfig"} ${KUBECONFIG:+${KUBECONFIG}} \

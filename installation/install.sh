@@ -6,7 +6,6 @@ OWN_DIR=$(readlink -f "$(dirname "${0}")")
 
 CFG_DIR=""
 CFG_SET=""
-CREATE_CFG_FACTORY=""
 INGRESS_NAMESPACE=ingress-nginx
 INSTALL_INGRESS_CONTROLLER=""
 KUBECONFIG=""
@@ -23,9 +22,6 @@ parse_flags() {
       ;;
     --cfg-set)
       shift; CFG_SET="$1"
-      ;;
-    --create-cfg-factory)
-      CREATE_CFG_FACTORY=true
       ;;
     --ingress-namespace)
       shift; INGRESS_NAMESPACE="$1"
@@ -117,7 +113,6 @@ if [ ! -d "${VALUES_DIR}" ]; then
   python3 ${OWN_DIR}/generate_helm_values.py \
     ${CFG_DIR:+"--cfg-dir"} ${CFG_DIR:+${CFG_DIR}} \
     ${CFG_SET:+"--cfg-set"} ${CFG_SET:+${CFG_SET}} \
-    ${CREATE_CFG_FACTORY:+"--create-cfg-factory"} \
     --namespace ${NAMESPACE} \
     --out-dir ${VALUES_DIR}
 else
