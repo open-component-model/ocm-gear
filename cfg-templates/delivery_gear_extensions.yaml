@@ -163,10 +163,10 @@ internal:
     # specifies the cvss version which is used
     cvss_version: CVSSv3
 
-    # aws_cfg_name (optional)
-    # name of the aws secret which should be used for the s3-client
+    # aws_cfg_set_name (optional)
+    # name of the cfg set which includes the aws config which should be used for the s3-client
     # aws config is necessary if s3-client is required for scanning
-    aws_cfg_name: ~
+    aws_cfg_set_name: ~
 
     # processing_mode (optional)
     # selection of {"rescan", "force_upload"}
