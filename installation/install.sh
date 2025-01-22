@@ -105,6 +105,7 @@ COMPONENT_DESCRIPTORS=$(ocm get cv ${OCM_GEAR_COMPONENT_REF}:${OCM_GEAR_VERSION}
 
 echo ">>> Installing OCM-Gear in version ${OCM_GEAR_VERSION}"
 
+BOOTSTRAPPING_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "bootstrapping" and .type | test("helmChart")) | .access.imageReference')
 DELIVERY_SERVICE_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-service" and .type | test("helmChart")) | .access.imageReference')
 DELIVERY_DASHBOARD_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "delivery-dashboard" and .type | test("helmChart")) | .access.imageReference')
 EXTENSIONS_CHART=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component.resources.[] | select(.name == "extensions" and .type | test("helmChart")) | .access.imageReference')
@@ -150,6 +151,14 @@ echo ">>> Installing OCM-Gear components"
 echo ">>> Creating namespace ${NAMESPACE}"
 kubectl create ns ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
 kubectl config set-context --current --namespace=$NAMESPACE
+
+if [ -f "${VALUES_DIR}/values-bootstrapping.yaml" ]; then
+  echo ">>> Installing bootstrapping chart from ${BOOTSTRAPPING_CHART}"
+  helm upgrade -i bootstrapping oci://${BOOTSTRAPPING_CHART%:*} \
+    --namespace ${NAMESPACE} \
+    --version ${BOOTSTRAPPING_CHART#*:} \
+    --values ${VALUES_DIR}/values-bootstrapping.yaml
+fi
 
 echo ">>> Installing delivery-database from ${DELIVERY_DATABASE_CHART}"
 helm upgrade -i delivery-db oci://${DELIVERY_DATABASE_CHART%:*} \
