@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import base64
 import collections.abc
 import logging
 import os
@@ -144,20 +143,6 @@ def ingress_helm_values(
     }
 
 
-def serialise_cfg_factory(
-    cfg_factory: model.ConfigFactory,
-    cfg_set: model.ConfigurationSet,
-) -> str:
-    # serialise cfg factory as json
-    cfg_sets = [cfg_set.cfg_set()]
-    serialiser = model.ConfigSetSerialiser(
-        cfg_sets=cfg_sets,
-        cfg_factory=cfg_factory,
-    )
-    serialised = serialiser.serialise().encode('utf-8')
-    return base64.b64encode(serialised).decode('utf-8')
-
-
 def common_env_vars(
     cfg_set: model.ConfigurationSet,
     namespace: str,
@@ -204,8 +189,6 @@ def delivery_db_helm_values(
 def delivery_service_helm_values(
     cfg_set: model.ConfigurationSet,
     namespace: str,
-    create_cfg_factory: bool=False,
-    cfg_factory: model.ConfigFactory=None,
 ) -> dict:
     delivery_service_cfg = cfg_set.delivery_service()
 
@@ -235,7 +218,6 @@ def delivery_service_helm_values(
         'autoscaler': autoscaler_helm_values(delivery_service_cfg),
         'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
         'featuresCfg': delivery_service_cfg.features_cfg(),
-        'createCfgFactorySecret': create_cfg_factory,
     }
 
     if delivery_db_cfg := delivery_db_cfg_if_specified(
@@ -255,12 +237,6 @@ def delivery_service_helm_values(
     ):
         helm_values['args'].append('--service-extensions')
         helm_values['args'].extend(extensions)
-
-    if create_cfg_factory:
-        helm_values['cfgFactory'] = serialise_cfg_factory(
-            cfg_factory=cfg_factory,
-            cfg_set=cfg_set,
-        )
 
     return helm_values
 
@@ -466,11 +442,6 @@ def parse_args():
         required=True,
     )
     parser.add_argument(
-        '--create-cfg-factory',
-        action='store_true',
-        default=False,
-    )
-    parser.add_argument(
         '--namespace',
         default='delivery',
     )
@@ -487,7 +458,6 @@ def main():
 
     cfg_dir = parsed_arguments.cfg_dir
     cfg_set_name = parsed_arguments.cfg_set
-    create_cfg_factory = parsed_arguments.create_cfg_factory
     namespace = parsed_arguments.namespace
     out_dir = parsed_arguments.out_dir
 
@@ -519,8 +489,6 @@ def main():
         helm_values=delivery_service_helm_values(
             cfg_set=cfg_set,
             namespace=namespace,
-            create_cfg_factory=create_cfg_factory,
-            cfg_factory=cfg_factory,
         ),
         out_file=os.path.join(out_dir, 'values-delivery-service.yaml'),
     )
