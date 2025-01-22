@@ -164,7 +164,6 @@ def common_env_vars(
 ) -> dict[str, str]:
     env_vars = {
         'SECRET_FACTORY_PATH': '/secrets',
-        'CFG_FACTORY_SECRET_PATH': '/cfg_factory/cfg_factory',
         'FEATURES_CFG_PATH': '/features_cfg/features_cfg',
         'K8S_TARGET_NAMESPACE': namespace,
     }
@@ -343,6 +342,7 @@ def extensions_helm_values(
         yield 'SCHEDULE', db_backup_cfg['schedule']
         yield 'SUCCESSFUL_JOBS_HISTORY_LIMIT', db_backup_cfg['successful_jobs_history_limit']
         yield 'FAILED_JOBS_HISTORY_LIMIT', db_backup_cfg['failed_jobs_history_limit']
+        yield 'CFG_FACTORY_SECRET_PATH', '/cfg_factory/cfg_factory'
 
     delivery_db_backup_cfgs = [
         dict(
