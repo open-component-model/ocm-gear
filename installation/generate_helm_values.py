@@ -11,6 +11,9 @@ import yaml
 import ctx
 import model
 
+import secret_mgmt
+
+
 logger = logging.getLogger(__name__)
 
 own_dir = os.path.abspath(os.path.dirname(__file__))
@@ -160,6 +163,7 @@ def common_env_vars(
     namespace: str,
 ) -> dict[str, str]:
     env_vars = {
+        'SECRET_FACTORY_PATH': '/secrets',
         'CFG_FACTORY_SECRET_PATH': '/cfg_factory/cfg_factory',
         'FEATURES_CFG_PATH': '/features_cfg/features_cfg',
         'K8S_TARGET_NAMESPACE': namespace,
@@ -172,6 +176,16 @@ def common_env_vars(
         pass
 
     return env_vars
+
+
+def bootstrapping_helm_values(
+    cfg_set: model.ConfigurationSet,
+) -> dict:
+    secret_factory: secret_mgmt.SecretFactory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_set)
+
+    return {
+        'secrets': secret_factory.serialise(),
+    }
 
 
 def delivery_db_helm_values(
@@ -489,6 +503,12 @@ def main():
         exist_ok=True,
     )
 
+    write_values_to_file(
+        helm_values=bootstrapping_helm_values(
+            cfg_set=cfg_set.cfg_set(),
+        ),
+        out_file=os.path.join(out_dir, 'values-bootstrapping.yaml'),
+    )
     write_values_to_file(
         helm_values=delivery_db_helm_values(
             cfg_set=cfg_set,
