@@ -214,12 +214,7 @@ def delivery_service_helm_values(
         pass
 
     helm_values = {
-        'args': [
-            '--delivery-cfg',
-            cfg_set.delivery().name(),
-            '--delivery-endpoints',
-            cfg_set.delivery_endpoints().name(),
-        ],
+        'args': [],
         'envVars': env_vars,
         'pod': pod_helm_values(
             cfg=delivery_service_cfg,
