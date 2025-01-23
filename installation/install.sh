@@ -95,9 +95,37 @@ if ! which kubectl 1>/dev/null; then
   echo ">>> Installed kubectl in version $(kubectl version)"
 fi
 
-OCM_GEAR_COMPONENT_REF="europe-docker.pkg.dev/gardener-project/releases//ocm.software/ocm-gear"
+OCM_REPO="europe-docker.pkg.dev/gardener-project/releases"
+OCM_GEAR_COMPONENT="ocm.software/ocm-gear"
+OCM_GEAR_COMPONENT_REF="${OCM_REPO}//${OCM_GEAR_COMPONENT}"
 OCM_GEAR_VERSION="${OCM_GEAR_VERSION:-$(ocm show versions ${OCM_GEAR_COMPONENT_REF} | tail -1)}"
 COMPONENT_DESCRIPTORS=$(ocm get cv ${OCM_GEAR_COMPONENT_REF}:${OCM_GEAR_VERSION} -o yaml -r)
+
+echo ">>> Installing required Python packages"
+PKG_DIR="/tmp/site-packages"
+mkdir -p "${PKG_DIR}"
+
+CC_UTILS_VERSION=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component | select(.name == "github.com/gardener/cc-utils") | .version')
+for resource in gardener-cicd-libs gardener-oci gardener-ocm; do
+  echo "   >>> Downloading ${resource}:${CC_UTILS_VERSION}"
+  ocm download resources \
+    "${OCM_REPO}//github.com/gardener/cc-utils:${CC_UTILS_VERSION}" \
+    "${resource}" \
+    -O - | tar xJ -C "${PKG_DIR}"
+done
+
+DELIVERY_SERVICE_VERSION=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component | select(.name == "ocm.software/ocm-gear/delivery-service") | .version')
+for resource in delivery-gear-utils; do
+  echo "   >>> Downloading ${resource}:${DELIVERY_SERVICE_VERSION}"
+  ocm download resources \
+    "${OCM_REPO}//ocm.software/ocm-gear/delivery-service:${DELIVERY_SERVICE_VERSION}" \
+    "${resource}" \
+    -O - | tar xJ -C "${PKG_DIR}"
+done
+
+pip3 install --upgrade --find-links "${PKG_DIR}" -r ${OWN_DIR}/requirements.txt
+
+rm -rf "${PKG_DIR}"
 
 echo ">>> Installing OCM-Gear in version ${OCM_GEAR_VERSION}"
 

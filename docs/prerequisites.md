@@ -8,11 +8,7 @@
 
 ## Python3
 
-A local Python3 environment with necessary libraries installed, e.g. via [pip](https://pypi.org/project/pip/):
-
-```
-python3 -m pip install -r requirements.txt
-```
+A local Python3 environment.
 
 <a id="k8s"></a>
 
