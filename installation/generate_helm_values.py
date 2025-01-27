@@ -101,6 +101,9 @@ def enabled_extensions(
         if extension_cfg.raw.get('issueReplicator'):
             enabled_extensions.add('backlogController')
             enabled_extensions.add('issueReplicator')
+        if extension_cfg.raw.get('sast'):
+            enabled_extensions.add('backlogController')
+            enabled_extensions.add('sast')
 
     return enabled_extensions
 
