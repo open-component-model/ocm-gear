@@ -148,27 +148,6 @@ def ingress_helm_values(
     }
 
 
-def common_env_vars(
-    cfg_set: model.ConfigurationSet,
-    namespace: str,
-) -> dict[str, str]:
-    env_vars = {
-        'SECRET_FACTORY_PATH': '/secrets',
-        'SCAN_CFG_PATH': '/cfg/scan_cfg',
-        'FINDINGS_CFG_PATH': '/cfg/findings',
-        'FEATURES_CFG_PATH': '/features_cfg/features_cfg',
-        'K8S_TARGET_NAMESPACE': namespace,
-    }
-
-    try:
-        kubernetes_cfg_name = cfg_set.cfg_set().kubernetes().name()
-        env_vars['K8S_CFG_NAME'] = kubernetes_cfg_name
-    except:
-        pass
-
-    return env_vars
-
-
 def bootstrapping_helm_values(
     cfg_set: model.ConfigurationSet,
 ) -> dict:
@@ -204,26 +183,19 @@ def delivery_db_helm_values(
 
 def delivery_service_helm_values(
     cfg_set: model.ConfigurationSet,
-    namespace: str,
 ) -> dict:
     delivery_service_cfg = cfg_set.delivery_service()
 
-    env_vars = common_env_vars(
-        cfg_set=cfg_set,
-        namespace=namespace,
-    )
-
     try:
-        extra_env_vars = [
+        env_vars = dict([
             [
                 env_var.get('name'),
                 f'"{env_var.get("value")}"',
             ]
             for env_var in delivery_service_cfg.env()
-        ]
-        env_vars = env_vars | dict(extra_env_vars)
+        ])
     except AttributeError:
-        pass
+        env_vars = {}
 
     helm_values = {
         'args': [],
@@ -282,81 +254,16 @@ def delivery_dashboard_helm_values(
 
 def extensions_helm_values(
     cfg_set: model.ConfigurationSet,
-    namespace: str,
 ):
-    env_vars = common_env_vars(
-        cfg_set=cfg_set,
-        namespace=namespace,
-    )
-
     extension_cfgs = extension_cfgs_if_specified(
         cfg_set=cfg_set,
     )
     delivery_service_cfg = cfg_set.delivery_service()
 
-    def iter_cache_manager_cfg(
-        extension_cfg_name: str,
-        cache_manager_cfg: dict,
-    ):
-        yield 'envVars', {
-            'CFG_NAME': extension_cfg_name,
-            **env_vars,
-        }
-        yield 'schedule', cache_manager_cfg.get('schedule')
-        yield 'successfulJobsHistoryLimit', cache_manager_cfg.get('successful_jobs_history_limit')
-        yield 'failedJobsHistoryLimit', cache_manager_cfg.get('failed_jobs_history_limit')
-
-        args = []
-
-        if delivery_service_cfg.invalid_semver_ok():
-            args.append('--invalid-semver-ok')
-
-        yield 'args', args
-
-    cache_manager_cfgs = [
-        dict(
-            iter_cache_manager_cfg(
-                extension_cfg_name=normalize_name(extension_cfg.name()),
-                cache_manager_cfg=cache_manager_cfg,
-            ),
-        )
-        for extension_cfg in extension_cfgs
-        if (cache_manager_cfg := cache_manager_cfg_if_specified(extension_cfg))
-    ]
-
-    def iter_delivery_db_backup_cfg(extension_cfg):
-        db_backup_cfg = delivery_db_backup_cfg_if_specified(extension_cfg)
-
-        if not db_backup_cfg:
-            return
-
-        yield 'DELIVERY_GEAR_CFG_NAME', normalize_name(extension_cfg.name())
-        yield 'SCHEDULE', db_backup_cfg['schedule']
-        yield 'SUCCESSFUL_JOBS_HISTORY_LIMIT', db_backup_cfg['successful_jobs_history_limit']
-        yield 'FAILED_JOBS_HISTORY_LIMIT', db_backup_cfg['failed_jobs_history_limit']
-        yield 'CFG_FACTORY_SECRET_PATH', '/cfg_factory/cfg_factory'
-
-    delivery_db_backup_cfgs = [
-        dict(
-            iter_delivery_db_backup_cfg(
-                extension_cfg=extension_cfg,
-            ),
-            **env_vars,
-        )
-        for extension_cfg in extension_cfgs
-    ]
+    scan_cfg_raw = cfg_set.scan_cfg().raw
+    scan_cfg: odg.scan_cfg.ScanConfiguration = odg.scan_cfg.ScanConfiguration.from_dict(scan_cfg_raw)
 
     def iter_helm_values() -> collections.abc.Generator[tuple[str, dict], None, None]:
-        extensions = enabled_extensions(
-            extension_cfgs=extension_cfgs,
-        )
-
-        artefact_enumerator_enabled = 'artefactEnumerator' in extensions
-        backlog_controller_enabled = 'backlogController' in extensions
-        cache_manager_enabled = 'cacheManager' in extensions
-        delivery_db_backup_enabled = 'deliveryDbBackup' in extensions
-        freshclam_enabled = 'clamav' in extensions
-
         rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring')
 
         def iter_scan_cfgs(
@@ -383,41 +290,45 @@ def extensions_helm_values(
         }
         yield 'configuration', configuration
 
-        if artefact_enumerator_enabled:
+        if artefact_enumerator := scan_cfg.artefact_enumerator:
             artefact_enumerator = {
                 'enabled': True,
-                'envVars': env_vars,
-                'configuration': {},
+                'schedule': artefact_enumerator.schedule,
+                'successful_jobs_history_limit': artefact_enumerator.successful_jobs_history_limit,
+                'failed_jobs_history_limit': artefact_enumerator.failed_jobs_history_limit,
             }
             yield 'artefact-enumerator', artefact_enumerator
 
-        if backlog_controller_enabled:
+        if backlog_controller := scan_cfg.backlog_controller:
             backlog_controller = {
                 'enabled': True,
-                'envVars': env_vars,
                 'scanConfigurations': [
                     normalize_name(extension_cfg.name())
                     for extension_cfg in extension_cfgs
                 ],
-                'namespace': namespace,
             }
             yield 'backlog-controller', backlog_controller
 
-        if cache_manager_enabled:
+        if cache_manager := scan_cfg.cache_manager:
             cache_manager = {
                 'enabled': True,
-                'configurations': cache_manager_cfgs,
+                'schedule': cache_manager.schedule,
+                'successful_jobs_history_limit': cache_manager.successful_jobs_history_limit,
+                'failed_jobs_history_limit': cache_manager.failed_jobs_history_limit,
+                'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
             }
             yield 'cache-manager', cache_manager
 
-        if delivery_db_backup_enabled:
+        if delivery_db_backup := scan_cfg.delivery_db_backup:
             delivery_db_backup = {
                 'enabled': True,
-                'configurations': delivery_db_backup_cfgs,
+                'schedule': delivery_db_backup.schedule,
+                'successful_jobs_history_limit': delivery_db_backup.successful_jobs_history_limit,
+                'failed_jobs_history_limit': delivery_db_backup.failed_jobs_history_limit,
             }
             yield 'delivery-db-backup', delivery_db_backup
 
-        if freshclam_enabled:
+        if scan_cfg.clamav:
             freshclam = {
                 'enabled': True,
             }
@@ -458,10 +369,6 @@ def parse_args():
         required=True,
     )
     parser.add_argument(
-        '--namespace',
-        default='delivery',
-    )
-    parser.add_argument(
         '--out-dir',
         default=os.path.join(own_dir, 'helm-values'),
     )
@@ -474,7 +381,6 @@ def main():
 
     cfg_dir = parsed_arguments.cfg_dir
     cfg_set_name = parsed_arguments.cfg_set
-    namespace = parsed_arguments.namespace
     out_dir = parsed_arguments.out_dir
 
     if cfg_dir:
@@ -504,7 +410,6 @@ def main():
     write_values_to_file(
         helm_values=delivery_service_helm_values(
             cfg_set=cfg_set,
-            namespace=namespace,
         ),
         out_file=os.path.join(out_dir, 'values-delivery-service.yaml'),
     )
@@ -517,7 +422,6 @@ def main():
     write_values_to_file(
         helm_values=extensions_helm_values(
             cfg_set=cfg_set,
-            namespace=namespace,
         ),
         out_file=os.path.join(out_dir, 'values-extensions.yaml'),
     )
