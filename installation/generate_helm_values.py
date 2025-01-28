@@ -10,6 +10,8 @@ import yaml
 import ctx
 import model
 
+import odg.findings
+import odg.scan_cfg
 import secret_mgmt
 
 
@@ -149,6 +151,8 @@ def common_env_vars(
 ) -> dict[str, str]:
     env_vars = {
         'SECRET_FACTORY_PATH': '/secrets',
+        'SCAN_CFG_PATH': '/cfg/scan_cfg',
+        'FINDINGS_CFG_PATH': '/cfg/findings',
         'FEATURES_CFG_PATH': '/features_cfg/features_cfg',
         'K8S_TARGET_NAMESPACE': namespace,
     }
@@ -165,10 +169,19 @@ def common_env_vars(
 def bootstrapping_helm_values(
     cfg_set: model.ConfigurationSet,
 ) -> dict:
-    secret_factory: secret_mgmt.SecretFactory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_set)
+    findings_raw = cfg_set.findings_cfg().raw.get('findings', [])
+    odg.findings.Finding.from_dict(findings_raw) # validate model classes
+
+    scan_cfg_raw = cfg_set.scan_cfg().raw
+    odg.scan_cfg.ScanConfiguration.from_dict(dict(scan_cfg_raw)) # validate model classes
+
+    secret_factory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_set.cfg_set())
+    secrets = secret_factory.serialise()
 
     return {
-        'secrets': secret_factory.serialise(),
+        'findings': findings_raw,
+        'scan_cfg': scan_cfg_raw,
+        'secrets': secrets,
     }
 
 
@@ -475,7 +488,7 @@ def main():
 
     write_values_to_file(
         helm_values=bootstrapping_helm_values(
-            cfg_set=cfg_set.cfg_set(),
+            cfg_set=cfg_set,
         ),
         out_file=os.path.join(out_dir, 'values-bootstrapping.yaml'),
     )
