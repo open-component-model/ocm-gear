@@ -290,6 +290,13 @@ def extensions_helm_values(
         }
         yield 'configuration', configuration
 
+        # enable extensions if the respective configuration is provided
+        for extension_name in scan_cfg.__dataclass_fields__:
+            if getattr(scan_cfg, extension_name):
+                yield extension_name.replace('_', '-'), {
+                    'enabled': True,
+                }
+
         if artefact_enumerator := scan_cfg.artefact_enumerator:
             artefact_enumerator = {
                 'enabled': True,
@@ -298,16 +305,6 @@ def extensions_helm_values(
                 'failed_jobs_history_limit': artefact_enumerator.failed_jobs_history_limit,
             }
             yield 'artefact-enumerator', artefact_enumerator
-
-        if backlog_controller := scan_cfg.backlog_controller:
-            backlog_controller = {
-                'enabled': True,
-                'scanConfigurations': [
-                    normalize_name(extension_cfg.name())
-                    for extension_cfg in extension_cfgs
-                ],
-            }
-            yield 'backlog-controller', backlog_controller
 
         if cache_manager := scan_cfg.cache_manager:
             cache_manager = {
@@ -327,12 +324,6 @@ def extensions_helm_values(
                 'failed_jobs_history_limit': delivery_db_backup.failed_jobs_history_limit,
             }
             yield 'delivery-db-backup', delivery_db_backup
-
-        if scan_cfg.clamav:
-            freshclam = {
-                'enabled': True,
-            }
-            yield 'freshclam', freshclam
 
     return dict(iter_helm_values())
 
