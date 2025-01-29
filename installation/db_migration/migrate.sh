@@ -69,3 +69,16 @@ if [[ $id_datatype != "character" ]]; then
   PGPASSWORD=${PGPASSWORD} \
     psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_3.sql
 fi
+
+cfg_name_column=$(PGPASSWORD=${PGPASSWORD} psql \
+  -h $HOST \
+  -p $PORT \
+  -d $DATABASE \
+  -U $PGUSER \
+  -t \
+  -c "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'artefact_metadata' AND COLUMN_NAME = 'cfg_name';")
+
+if [[ $cfg_name_column ]]; then
+  PGPASSWORD=${PGPASSWORD} \
+    psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_4.sql
+fi
