@@ -10,8 +10,8 @@ import yaml
 import ctx
 import model
 
+import odg.extensions_cfg
 import odg.findings
-import odg.scan_cfg
 import secret_mgmt
 
 
@@ -38,28 +38,6 @@ def delivery_db_cfg_if_specified(
     return None
 
 
-def cache_manager_cfg_if_specified(
-    extension_cfg,
-):
-    try:
-        return extension_cfg.cacheManager()
-    except:
-        logger.warning('cache-manager cfg not found')
-
-    return None
-
-
-def delivery_db_backup_cfg_if_specified(
-    extension_cfg,
-):
-    try:
-        return extension_cfg.deliveryDbBackup()
-    except:
-        logger.warning('delivery-db-backup cfg not found')
-
-    return None
-
-
 def prometheus_cfg_if_specified(
     cfg_set: model.ConfigurationSet,
 ):
@@ -69,45 +47,6 @@ def prometheus_cfg_if_specified(
         logger.warning('prometheus cfg not found')
 
     return None
-
-
-def extension_cfgs_if_specified(
-    cfg_set: model.ConfigurationSet,
-) -> tuple:
-    try:
-        return tuple(cfg_set._cfg_elements(cfg_type_name='delivery_gear_extensions'))
-    except:
-        logger.warning('extensions cfgs not found')
-
-    return tuple()
-
-
-def enabled_extensions(
-    extension_cfgs: tuple,
-) -> set[str]:
-    enabled_extensions = set()
-
-    for extension_cfg in extension_cfgs:
-        if extension_cfg.raw.get('artefactEnumerator'):
-            enabled_extensions.add('artefactEnumerator')
-        if extension_cfg.raw.get('bdba'):
-            enabled_extensions.add('backlogController')
-            enabled_extensions.add('bdba')
-        if extension_cfg.raw.get('clamav'):
-            enabled_extensions.add('backlogController')
-            enabled_extensions.add('clamav')
-        if extension_cfg.raw.get('cacheManager'):
-            enabled_extensions.add('cacheManager')
-        if extension_cfg.raw.get('deliveryDbBackup'):
-            enabled_extensions.add('deliveryDbBackup')
-        if extension_cfg.raw.get('issueReplicator'):
-            enabled_extensions.add('backlogController')
-            enabled_extensions.add('issueReplicator')
-        if extension_cfg.raw.get('sast'):
-            enabled_extensions.add('backlogController')
-            enabled_extensions.add('sast')
-
-    return enabled_extensions
 
 
 def pod_helm_values(
@@ -154,16 +93,20 @@ def bootstrapping_helm_values(
     findings_raw = cfg_set.findings_cfg().raw.get('findings', [])
     odg.findings.Finding.from_dict(findings_raw) # validate model classes
 
-    scan_cfg_raw = cfg_set.scan_cfg().raw
-    odg.scan_cfg.ScanConfiguration.from_dict(dict(scan_cfg_raw)) # validate model classes
+    extensions_cfg_raw = cfg_set.extensions_cfg().raw
+    odg.extensions_cfg.ExtensionsConfiguration.from_dict(dict(extensions_cfg_raw)) # validate model classes
 
     secret_factory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_set.cfg_set())
     secrets = secret_factory.serialise()
 
+    delivery_service_cfg = cfg_set.delivery_service()
+    ocm_repo_mappings = delivery_service_cfg.features_cfg().get('ocmRepoMappings')
+
     return {
         'findings': findings_raw,
-        'scan_cfg': scan_cfg_raw,
+        'extensions_cfg': extensions_cfg_raw,
         'secrets': secrets,
+        'ocm_repo_mappings': ocm_repo_mappings,
     }
 
 
@@ -197,34 +140,21 @@ def delivery_service_helm_values(
     except AttributeError:
         env_vars = {}
 
+    features_cfg = delivery_service_cfg.features_cfg()
+    if 'ocmRepoMappings' in features_cfg:
+        # ocm repo mappings were already added to bootstrapping chart values
+        del features_cfg['ocmRepoMappings']
+
     helm_values = {
-        'args': [],
         'envVars': env_vars,
-        'pod': pod_helm_values(
-            cfg=delivery_service_cfg,
-        ),
+        'pod': pod_helm_values(delivery_service_cfg),
         'autoscaler': autoscaler_helm_values(delivery_service_cfg),
         'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
-        'featuresCfg': delivery_service_cfg.features_cfg(),
+        'featuresCfg': features_cfg,
     }
 
-    if delivery_db_cfg := delivery_db_cfg_if_specified(
-        cfg_set=cfg_set,
-    ):
-        helm_values['args'].append('--delivery-db-cfg')
-        helm_values['args'].append(delivery_db_cfg.name())
-
     if delivery_service_cfg.invalid_semver_ok():
-        helm_values['args'].append('--invalid-semver-ok')
-
-    extension_cfgs = extension_cfgs_if_specified(
-        cfg_set=cfg_set,
-    )
-    if extensions := enabled_extensions(
-        extension_cfgs=extension_cfgs,
-    ):
-        helm_values['args'].append('--service-extensions')
-        helm_values['args'].extend(extensions)
+        helm_values['args'] = ['--invalid-semver-ok']
 
     return helm_values
 
@@ -255,48 +185,19 @@ def delivery_dashboard_helm_values(
 def extensions_helm_values(
     cfg_set: model.ConfigurationSet,
 ):
-    extension_cfgs = extension_cfgs_if_specified(
-        cfg_set=cfg_set,
-    )
     delivery_service_cfg = cfg_set.delivery_service()
 
-    scan_cfg_raw = cfg_set.scan_cfg().raw
-    scan_cfg: odg.scan_cfg.ScanConfiguration = odg.scan_cfg.ScanConfiguration.from_dict(scan_cfg_raw)
+    extensions_cfg_raw = cfg_set.extensions_cfg().raw
+    extensions_cfg = odg.extensions_cfg.ExtensionsConfiguration.from_dict(extensions_cfg_raw)
 
     def iter_helm_values() -> collections.abc.Generator[tuple[str, dict], None, None]:
-        rescoring_cfg = delivery_service_cfg.features_cfg().get('rescoring')
-
-        def iter_scan_cfgs(
-            extension_cfgs: collections.abc.Iterable[model.NamedModelElement],
-            rescoring_cfg: dict | None,
-        ) -> collections.abc.Generator[dict, None, None]:
-            for extension_cfg in extension_cfgs:
-                if rescoring_cfg:
-                    # inject rescoring-cfg to avoid duplication
-                    extension_cfg.raw['defaults']['rescoring'] = rescoring_cfg
-                yield {
-                    'name': normalize_name(extension_cfg.name()),
-                    'spec': extension_cfg.raw,
-                }
-
-        configuration = {
-            'scanConfigurations': [
-                scan_cfg
-                for scan_cfg in iter_scan_cfgs(
-                    extension_cfgs=extension_cfgs,
-                    rescoring_cfg=rescoring_cfg,
-                )
-            ],
-        }
-        yield 'configuration', configuration
-
         def helm_values_for_extension_cfg(
-            extension_cfg: odg.scan_cfg.ArtefactEnumeratorConfig
-                | odg.scan_cfg.CacheManagerConfig
-                | odg.scan_cfg.DeliveryDBBackup,
+            extension_cfg: odg.extensions_cfg.ArtefactEnumeratorConfig
+                | odg.extensions_cfg.CacheManagerConfig
+                | odg.extensions_cfg.DeliveryDBBackup,
             absent_ok: bool=True,
         ) -> dict | None:
-            if isinstance(extension_cfg, odg.scan_cfg.ArtefactEnumeratorConfig):
+            if isinstance(extension_cfg, odg.extensions_cfg.ArtefactEnumeratorConfig):
                 return {
                     'enabled': extension_cfg.enabled,
                     'schedule': extension_cfg.schedule,
@@ -304,7 +205,7 @@ def extensions_helm_values(
                     'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
                 }
 
-            elif isinstance(extension_cfg, odg.scan_cfg.CacheManagerConfig):
+            elif isinstance(extension_cfg, odg.extensions_cfg.CacheManagerConfig):
                 return {
                     'enabled': extension_cfg.enabled,
                     'schedule': extension_cfg.schedule,
@@ -313,7 +214,7 @@ def extensions_helm_values(
                     'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
                 }
 
-            elif isinstance(extension_cfg, odg.scan_cfg.DeliveryDBBackup):
+            elif isinstance(extension_cfg, odg.extensions_cfg.DeliveryDBBackup):
                 return {
                     'enabled': extension_cfg.enabled,
                     'schedule': extension_cfg.schedule,
@@ -327,8 +228,8 @@ def extensions_helm_values(
 
                 raise ValueError(f'unsupported extension type: {type(extension_cfg)}')
 
-        for extension_name in scan_cfg.__dataclass_fields__:
-            extension_cfg: odg.scan_cfg.ScanConfigMixins | None = getattr(scan_cfg, extension_name)
+        for extension_name in extensions_cfg.enabled_extensions():
+            extension_cfg: odg.extensions_cfg.ExtensionCfgMixins | None = getattr(extensions_cfg, extension_name)
             extension_name = extension_name.replace('_', '-')
 
             if (
