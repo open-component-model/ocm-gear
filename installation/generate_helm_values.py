@@ -290,40 +290,63 @@ def extensions_helm_values(
         }
         yield 'configuration', configuration
 
-        # enable extensions if the respective configuration is provided
-        for extension_name in scan_cfg.__dataclass_fields__:
-            if getattr(scan_cfg, extension_name):
-                yield extension_name.replace('_', '-'), {
-                    'enabled': True,
+        def helm_values_for_extension_cfg(
+            extension_cfg: odg.scan_cfg.ArtefactEnumeratorConfig
+                | odg.scan_cfg.CacheManagerConfig
+                | odg.scan_cfg.DeliveryDBBackup,
+            absent_ok: bool=True,
+        ) -> dict | None:
+            if isinstance(extension_cfg, odg.scan_cfg.ArtefactEnumeratorConfig):
+                return {
+                    'enabled': extension_cfg.enabled,
+                    'schedule': extension_cfg.schedule,
+                    'successful_jobs_history_limit': extension_cfg.successful_jobs_history_limit,
+                    'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
                 }
 
-        if artefact_enumerator := scan_cfg.artefact_enumerator:
-            artefact_enumerator = {
-                'enabled': True,
-                'schedule': artefact_enumerator.schedule,
-                'successful_jobs_history_limit': artefact_enumerator.successful_jobs_history_limit,
-                'failed_jobs_history_limit': artefact_enumerator.failed_jobs_history_limit,
-            }
-            yield 'artefact-enumerator', artefact_enumerator
+            elif isinstance(extension_cfg, odg.scan_cfg.CacheManagerConfig):
+                return {
+                    'enabled': extension_cfg.enabled,
+                    'schedule': extension_cfg.schedule,
+                    'successful_jobs_history_limit': extension_cfg.successful_jobs_history_limit,
+                    'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
+                    'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
+                }
 
-        if cache_manager := scan_cfg.cache_manager:
-            cache_manager = {
-                'enabled': True,
-                'schedule': cache_manager.schedule,
-                'successful_jobs_history_limit': cache_manager.successful_jobs_history_limit,
-                'failed_jobs_history_limit': cache_manager.failed_jobs_history_limit,
-                'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
-            }
-            yield 'cache-manager', cache_manager
+            elif isinstance(extension_cfg, odg.scan_cfg.CacheManagerConfig):
+                return {
+                    'enabled': extension_cfg.enabled,
+                    'schedule': extension_cfg.schedule,
+                    'successful_jobs_history_limit': extension_cfg.successful_jobs_history_limit,
+                    'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
+                }
 
-        if delivery_db_backup := scan_cfg.delivery_db_backup:
-            delivery_db_backup = {
-                'enabled': True,
-                'schedule': delivery_db_backup.schedule,
-                'successful_jobs_history_limit': delivery_db_backup.successful_jobs_history_limit,
-                'failed_jobs_history_limit': delivery_db_backup.failed_jobs_history_limit,
-            }
-            yield 'delivery-db-backup', delivery_db_backup
+            else:
+                if absent_ok:
+                    return None
+
+                raise ValueError(f'unsupported extension type: {type(extension_cfg)}')
+
+        for extension_name in scan_cfg.__dataclass_fields__:
+            extension_cfg: odg.scan_cfg.ScanConfigMixins | None = getattr(scan_cfg, extension_name)
+            extension_name = extension_name.replace('_', '-')
+
+            if (
+                not extension_cfg
+                or not extension_cfg.enabled
+            ):
+                yield extension_name, {
+                    'enabled': False,
+                }
+                continue
+
+            if (helm_values := helm_values_for_extension_cfg(extension_cfg)):
+                yield extension_name, helm_values
+
+            else:
+                yield extension_name, {
+                    'enabled': extension_cfg.enabled,
+                }
 
     return dict(iter_helm_values())
 
