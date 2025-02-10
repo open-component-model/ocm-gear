@@ -313,7 +313,7 @@ def extensions_helm_values(
                     'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
                 }
 
-            elif isinstance(extension_cfg, odg.scan_cfg.CacheManagerConfig):
+            elif isinstance(extension_cfg, odg.scan_cfg.DeliveryDBBackup):
                 return {
                     'enabled': extension_cfg.enabled,
                     'schedule': extension_cfg.schedule,
