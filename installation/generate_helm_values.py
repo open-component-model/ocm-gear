@@ -80,10 +80,9 @@ def ingress_helm_values(
     ingress_cfg: dict,
 ) -> dict:
     return {
-        'annotations': ingress_cfg.get('annotations', dict()),
-        'class': ingress_cfg.get('class', 'nginx'),
-        'hosts': ingress_cfg.get('hosts', []),
-        'tlsHostNames': ingress_cfg.get('tls_host_names', []),
+        'hosts': ingress_cfg['hosts'],
+        'annotations': ingress_cfg.get('annotations'),
+        'class': ingress_cfg.get('class'),
     }
 
 
