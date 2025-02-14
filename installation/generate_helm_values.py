@@ -100,12 +100,14 @@ def bootstrapping_helm_values(
 
     delivery_service_cfg = cfg_set.delivery_service()
     ocm_repo_mappings = delivery_service_cfg.features_cfg().get('ocmRepoMappings')
+    profiles = delivery_service_cfg.features_cfg().get('profiles')
 
     return {
         'findings': findings_raw,
         'extensions_cfg': extensions_cfg_raw,
         'secrets': secrets,
         'ocm_repo_mappings': ocm_repo_mappings,
+        'profiles': profiles,
     }
 
 
@@ -143,6 +145,9 @@ def delivery_service_helm_values(
     if 'ocmRepoMappings' in features_cfg:
         # ocm repo mappings were already added to bootstrapping chart values
         del features_cfg['ocmRepoMappings']
+    if 'profiles' in features_cfg:
+        # profiles were already added to bootstrapping chart values
+        del features_cfg['profiles']
 
     helm_values = {
         'envVars': env_vars,
