@@ -228,17 +228,8 @@ def extensions_helm_values(
                 raise ValueError(f'unsupported extension type: {type(extension_cfg)}')
 
         for extension_name in extensions_cfg.enabled_extensions():
-            extension_cfg: odg.extensions_cfg.ExtensionCfgMixins | None = getattr(extensions_cfg, extension_name)
+            extension_cfg: odg.extensions_cfg.ExtensionCfgMixins = getattr(extensions_cfg, extension_name)
             extension_name = extension_name.replace('_', '-')
-
-            if (
-                not extension_cfg
-                or not extension_cfg.enabled
-            ):
-                yield extension_name, {
-                    'enabled': False,
-                }
-                continue
 
             if (helm_values := helm_values_for_extension_cfg(extension_cfg)):
                 yield extension_name, helm_values
