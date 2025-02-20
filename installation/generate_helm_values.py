@@ -2,6 +2,7 @@
 
 import argparse
 import collections.abc
+import json
 import logging
 import os
 
@@ -95,7 +96,12 @@ def bootstrapping_helm_values(
     extensions_cfg_raw = cfg_set.extensions_cfg().raw
     odg.extensions_cfg.ExtensionsConfiguration.from_dict(dict(extensions_cfg_raw)) # validate model classes
 
-    secret_factory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_set.cfg_set())
+    # dirty: Parse referenced cfg set to a dictionary representation to create a cfg factory from it
+    cfg_factory = model.ConfigFactory.from_dict(json.loads(model.ConfigSetSerialiser(
+        cfg_sets=[cfg_set.cfg_set()],
+        cfg_factory=cfg_set.cfg_factory,
+    ).serialise()))
+    secret_factory = secret_mgmt.SecretFactory.from_cfg_factory(cfg_factory)
     secrets = secret_factory.serialise()
 
     delivery_service_cfg = cfg_set.delivery_service()
