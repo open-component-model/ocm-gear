@@ -82,3 +82,16 @@ if [[ $cfg_name_column ]]; then
   PGPASSWORD=${PGPASSWORD} \
     psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_4.sql
 fi
+
+correlation_id=$(PGPASSWORD=${PGPASSWORD} psql \
+  -h $HOST \
+  -p $PORT \
+  -d $DATABASE \
+  -U $PGUSER \
+  -t \
+  -c "SELECT data->>'correlation_id' FROM artefact_metadata WHERE type = 'compliance/snapshots' LIMIT 1;")
+
+if [[ $correlation_id ]]; then
+  PGPASSWORD=${PGPASSWORD} \
+    psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_5.sql
+fi
