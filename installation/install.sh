@@ -95,6 +95,7 @@ if ! which kubectl 1>/dev/null; then
   echo ">>> Installed kubectl in version $(kubectl version)"
 fi
 
+echo ">>> Retrieving OCM component descriptors"
 OCM_REPO="europe-docker.pkg.dev/gardener-project/releases"
 OCM_GEAR_COMPONENT="ocm.software/ocm-gear"
 OCM_GEAR_COMPONENT_REF="${OCM_REPO}//${OCM_GEAR_COMPONENT}"
@@ -123,7 +124,7 @@ for resource in delivery-gear-utils; do
     -O - | tar xJ -C "${PKG_DIR}"
 done
 
-pip3 install --upgrade --find-links "${PKG_DIR}" -r ${OWN_DIR}/requirements.txt
+pip3 install --upgrade --find-links "${PKG_DIR}" -r ${OWN_DIR}/requirements.txt > /dev/null
 
 rm -rf "${PKG_DIR}"
 
@@ -239,6 +240,8 @@ spec:
       interval: 15s" | kubectl apply --namespace=${INGRESS_NAMESPACE} -f -
   fi
 fi
+
+echo ">>> Installation finished successfully"
 
 echo ">>> Going to attempt db-migration (if necessary)"
 PGPASSWORD=$(cat ${VALUES_DIR}/values-delivery-db.yaml | yq .postgresqlPassword)
