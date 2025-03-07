@@ -1,6 +1,8 @@
 BEGIN;
 
 -- Drop correlation-id from compliance snapshots
-UPDATE artefact_metadata SET data = data::jsonb #- '{correlation_id}' WHERE type = 'compliance/snapshots';
+-- Delete compliance snapshots once because their data key has changed
+-- -> Compliance snapshots will be created ad-hoc again eventually
+DELETE FROM artefact_metadata WHERE type = 'compliance/snapshots';
 
 COMMIT;
