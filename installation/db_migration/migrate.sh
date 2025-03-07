@@ -89,7 +89,7 @@ correlation_id=$(PGPASSWORD=${PGPASSWORD} psql \
   -d $DATABASE \
   -U $PGUSER \
   -t \
-  -c "SELECT data->>'correlation_id' FROM artefact_metadata WHERE type = 'compliance/snapshots' LIMIT 1;")
+  -c "SELECT data->>'correlation_id' FROM artefact_metadata WHERE type = 'compliance/snapshots' LIMIT 1;" | xargs)
 
 if [[ $correlation_id ]]; then
   PGPASSWORD=${PGPASSWORD} \
