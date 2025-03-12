@@ -124,6 +124,15 @@ for resource in delivery-gear-utils; do
     -O - | tar xJ -C "${PKG_DIR}"
 done
 
+BDBA_CLIENT_VERSION=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component | select(.name == "ocm.software/ocm-gear/bdba-client") | .version')
+for resource in bdba; do
+  echo "   >>> Downloading ${resource}:${BDBA_CLIENT_VERSION}"
+  ocm download resources \
+    "${OCM_REPO}//ocm.software/ocm-gear/bdba-client:${BDBA_CLIENT_VERSION}" \
+    "${resource}" \
+    -O - | tar xJ -C "${PKG_DIR}"
+done
+
 pip3 install --upgrade --find-links "${PKG_DIR}" -r ${OWN_DIR}/requirements.txt > /dev/null
 
 rm -rf "${PKG_DIR}"
