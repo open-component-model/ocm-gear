@@ -105,11 +105,20 @@ def bootstrapping_helm_values(
     secrets = secret_factory.serialise()
 
     delivery_service_cfg = cfg_set.delivery_service()
-    ocm_repo_mappings = delivery_service_cfg.features_cfg().get('ocmRepoMappings')
-    profiles = delivery_service_cfg.features_cfg().get('profiles')
+    features_cfg: dict = delivery_service_cfg.features_cfg()
+    ocm_repo_mappings = features_cfg.get('ocmRepoMappings')
+    profiles = features_cfg.get('profiles')
+
+    if 'ocmRepoMappings' in features_cfg:
+        # added separately
+        del features_cfg['ocmRepoMappings']
+    if 'profiles' in features_cfg:
+        # added separately
+        del features_cfg['profiles']
 
     return {
         'findings': findings_raw,
+        'features_cfg': features_cfg,
         'extensions_cfg': extensions_cfg_raw,
         'secrets': secrets,
         'ocm_repo_mappings': ocm_repo_mappings,
@@ -147,20 +156,11 @@ def delivery_service_helm_values(
     except AttributeError:
         env_vars = {}
 
-    features_cfg = delivery_service_cfg.features_cfg()
-    if 'ocmRepoMappings' in features_cfg:
-        # ocm repo mappings were already added to bootstrapping chart values
-        del features_cfg['ocmRepoMappings']
-    if 'profiles' in features_cfg:
-        # profiles were already added to bootstrapping chart values
-        del features_cfg['profiles']
-
     helm_values = {
         'envVars': env_vars,
         'pod': pod_helm_values(delivery_service_cfg),
         'autoscaler': autoscaler_helm_values(delivery_service_cfg),
         'ingress': ingress_helm_values(delivery_service_cfg.ingress()),
-        'featuresCfg': features_cfg,
     }
 
     if delivery_service_cfg.invalid_semver_ok():
