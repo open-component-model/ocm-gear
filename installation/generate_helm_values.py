@@ -288,6 +288,13 @@ def parse_args():
         '--out-dir',
         default=os.path.join(own_dir, 'helm-values'),
     )
+    parser.add_argument(
+        '--modg',
+        default=False,
+        required=False,
+        help='Only generate values required for modg deployment',
+        action='store_true'
+    )
 
     return parser.parse_args()
 
@@ -298,6 +305,7 @@ def main():
     cfg_dir = parsed_arguments.cfg_dir
     cfg_set_name = parsed_arguments.cfg_set
     out_dir = parsed_arguments.out_dir
+    modg = parsed_arguments.modg
 
     if cfg_dir:
         cfg_factory = model.ConfigFactory.from_cfg_dir(cfg_dir)
@@ -317,6 +325,10 @@ def main():
         ),
         out_file=os.path.join(out_dir, 'values-bootstrapping.yaml'),
     )
+
+    if modg:
+        return
+
     write_values_to_file(
         helm_values=delivery_db_helm_values(
             cfg_set=cfg_set,
