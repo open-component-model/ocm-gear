@@ -124,7 +124,7 @@ for resource in delivery-gear-utils; do
     -O - | tar xJ -C "${PKG_DIR}"
 done
 
-BDBA_CLIENT_VERSION=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component | select(.name == "ocm.software/ocm-gear/bdba-client") | .version')
+BDBA_CLIENT_VERSION=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval '.component | select(.name == "ocm.software/ocm-gear/bdba-client")' | yq eval 'select(documentIndex == 0) | .version')
 for resource in bdba; do
   echo "   >>> Downloading ${resource}:${BDBA_CLIENT_VERSION}"
   ocm download resources \
