@@ -95,3 +95,18 @@ if [[ $correlation_id ]]; then
   PGPASSWORD=${PGPASSWORD} \
     psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_5.sql
 fi
+
+allowed_processing_time_column=$(PGPASSWORD=${PGPASSWORD} psql \
+  -h $HOST \
+  -p $PORT \
+  -d $DATABASE \
+  -U $PGUSER \
+  -t \
+  -c "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'artefact_metadata' AND COLUMN_NAME = 'allowed_processing_time';")
+
+if [[ ! $allowed_processing_time_column ]]; then
+  PGPASSWORD=${PGPASSWORD} \
+    psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_6.sql
+
+  ${own_dir}/_migrate_7.py --db-url "postgresql+psycopg://${PGUSER}:${PGPASSWORD}@${HOST}:${PORT}/${DATABASE}"
+fi
