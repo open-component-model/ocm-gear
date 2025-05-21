@@ -110,3 +110,16 @@ if [[ ! $allowed_processing_time_column ]]; then
 
   ${own_dir}/_migrate_7.py --db-url "postgresql+psycopg://${PGUSER}:${PGPASSWORD}@${HOST}:${PORT}/${DATABASE}"
 fi
+
+due_date=$(PGPASSWORD=${PGPASSWORD} psql \
+  -h $HOST \
+  -p $PORT \
+  -d $DATABASE \
+  -U $PGUSER \
+  -t \
+  -c "SELECT data->>'due_date' FROM artefact_metadata WHERE type = 'compliance/snapshots' LIMIT 1;" | xargs)
+
+if [[ $due_date ]]; then
+  PGPASSWORD=${PGPASSWORD} \
+    psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_8.sql
+fi
