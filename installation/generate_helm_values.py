@@ -202,12 +202,17 @@ def extensions_helm_values(
 
     def iter_helm_values() -> collections.abc.Generator[tuple[str, dict], None, None]:
         def helm_values_for_extension_cfg(
-            extension_cfg: odg.extensions_cfg.ArtefactEnumeratorConfig
+            extension_cfg: odg.extensions_cfg.AccessManagerConfig
+                | odg.extensions_cfg.ArtefactEnumeratorConfig
                 | odg.extensions_cfg.CacheManagerConfig
                 | odg.extensions_cfg.DeliveryDBBackup,
             absent_ok: bool=True,
         ) -> dict | None:
-            if isinstance(extension_cfg, odg.extensions_cfg.ArtefactEnumeratorConfig):
+            if isinstance(extension_cfg, (
+                odg.extensions_cfg.AccessManagerConfig,
+                odg.extensions_cfg.ArtefactEnumeratorConfig,
+                odg.extensions_cfg.DeliveryDBBackup,
+            )):
                 return {
                     'enabled': extension_cfg.enabled,
                     'schedule': extension_cfg.schedule,
@@ -222,14 +227,6 @@ def extensions_helm_values(
                     'successful_jobs_history_limit': extension_cfg.successful_jobs_history_limit,
                     'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
                     'args': ['--invalid-semver-ok'] if delivery_service_cfg.invalid_semver_ok() else [],
-                }
-
-            elif isinstance(extension_cfg, odg.extensions_cfg.DeliveryDBBackup):
-                return {
-                    'enabled': extension_cfg.enabled,
-                    'schedule': extension_cfg.schedule,
-                    'successful_jobs_history_limit': extension_cfg.successful_jobs_history_limit,
-                    'failed_jobs_history_limit': extension_cfg.failed_jobs_history_limit,
                 }
 
             else:
