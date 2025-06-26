@@ -21,6 +21,9 @@ ocm-gear:
       steps:
         lint:
           execute: lint
+        replicate:
+          trait_depends:
+            - release
       traits:
         version:
           preprocess: finalize
