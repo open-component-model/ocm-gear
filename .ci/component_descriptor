@@ -27,6 +27,13 @@ repo_dir = os.path.abspath(os.path.join(own_dir, os.pardir))
 delivery_service_versionfile = os.path.join(repo_dir, 'DELIVERY_SERVICE_VERSION')
 delivery_dashboard_versionfile = os.path.join(repo_dir, 'DELIVERY_DASHBOARD_VERSION')
 delivery_database_versionfile = os.path.join(repo_dir, 'DELIVERY_DATABASE_VERSION')
+
+nginx_ingress_controller_versionfile = os.path.join(repo_dir, 'NGINX_INGRESS_CONTROLLER_VERSION')
+nginx_ingress_controller_helmchart_versionfile = os.path.join(
+    repo_dir,
+    'NGINX_INGRESS_CONTROLLER_HELM_CHART_VERSION',
+)
+
 prometheus_versionfile = os.path.join(repo_dir, 'PROMETHEUS_VERSION')
 
 installation_dir = os.path.join(repo_dir, 'installation')
@@ -103,6 +110,8 @@ def main():
     delivery_dashboard_version = component_version_from_file(delivery_dashboard_versionfile)
     delivery_database_version = component_version_from_file(delivery_database_versionfile)
     prometheus_version = component_version_from_file(prometheus_versionfile)
+    nginx_ingress_controller_version = component_version_from_file(nginx_ingress_controller_versionfile) # noqa: E501
+    nginx_ingress_controller_helmchart_version = component_version_from_file(nginx_ingress_controller_helmchart_versionfile) # noqa: E501
 
     component_descriptor = parse_component_descriptor()
     component = component_descriptor.component
@@ -144,6 +153,30 @@ def main():
             componentName='ocm.software/ocm-gear/prometheus',
             version=prometheus_version,
             labels=[],
+        )
+    )
+
+    component.resources.append(
+        ocm.Resource(
+            name='nginx-ingress-controller',
+            version=nginx_ingress_controller_helmchart_version,
+            type=ocm.ArtefactType.HELM_CHART,
+            access=ocm.OciAccess(
+                imageReference='registry-1.docker.io/bitnamicharts/nginx-ingress-controller:11.6.25',
+            ),
+            relation=ocm.ResourceRelation.EXTERNAL,
+        )
+    )
+
+    component.resources.append(
+        ocm.Resource(
+            name='nginx-ingress-controller',
+            version=nginx_ingress_controller_version,
+            type=ocm.ArtefactType.OCI_IMAGE,
+            access=ocm.OciAccess(
+                imageReference='registry-1.docker.io/bitnami/nginx-ingress-controller:1.12.3-debian-12-r2', # noqa: E501
+            ),
+            relation=ocm.ResourceRelation.EXTERNAL,
         )
     )
 
