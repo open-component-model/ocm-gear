@@ -21,7 +21,8 @@ def parse_args():
     parser.add_argument(
         '--component-descriptor-path',
         required=True,
-        help='Path to the component descriptor YAML file.')
+        help='Path to the component descriptor YAML file.',
+    )
     return parser.parse_args()
 
 
@@ -30,10 +31,10 @@ def main():
     cd_path = args.component_descriptor_path
 
     component_descriptor = ocm.ComponentDescriptor.from_dict(
-        ci.util.parse_yaml_file(cd_path)
+        component_descriptor_dict=ci.util.parse_yaml_file(cd_path),
     )
     source_repo = 'europe-docker.pkg.dev/gardener-project/releases'
-    target_repo = 'releases/odg'
+    tgt_ocm_repo_path = 'releases/odg'
 
     oci_client = ccc.oci.oci_client()
 
@@ -45,11 +46,11 @@ def main():
     tuple(
         ctt.process_dependencies.process_images(
             processing_cfg_path=os.path.join(repo_root, 'processing.cfg'),
-            component_descriptor_v2=component_descriptor,
+            root_component_descriptor=component_descriptor,
             component_descriptor_lookup=lookup,
             inject_ocm_coordinates_into_oci_manifests=True,
             oci_client=oci_client,
-            tgt_ocm_repository=target_repo
+            tgt_ocm_repo_path=tgt_ocm_repo_path,
         )
     )
 
