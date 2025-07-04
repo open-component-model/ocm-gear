@@ -24,7 +24,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--component-descriptor-path',
-        required=True,
+        required=False,
         help='Path to the component descriptor YAML file.',
     )
     return parser.parse_args()
