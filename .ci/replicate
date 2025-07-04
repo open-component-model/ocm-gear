@@ -10,6 +10,8 @@ import ci.util
 import cnudie.retrieve
 import ctt.process_dependencies
 import ocm
+import version as version_mod
+
 
 ci.log.configure_default_logging()
 logger = logging.getLogger(__name__)
@@ -28,13 +30,22 @@ def parse_args():
     return parser.parse_args()
 
 
+def ocm_gear_version() -> str:
+    effective_version = os.environ.get('EFFECTIVE_VERSION')
+
+    if effective_version and version_mod.is_final(effective_version):
+        return effective_version
+
+    version_file = os.path.join(repo_root, 'VERSION')
+    with open(version_file, 'r') as file:
+        version = file.read().strip()
+
+    return version.split('-')[0]
+
+
 def main():
     args = parse_args()
-    cd_path = args.component_descriptor_path
 
-    component_descriptor = ocm.ComponentDescriptor.from_dict(
-        component_descriptor_dict=ci.util.parse_yaml_file(cd_path),
-    )
     source_repo = 'europe-docker.pkg.dev/gardener-project/releases'
     tgt_ocm_repo_path = 'releases/odg'
 
@@ -44,6 +55,16 @@ def main():
         ocm_repository_lookup=cnudie.retrieve.ocm_repository_lookup(source_repo),
         oci_client=oci_client,
     )
+
+    if component_descriptor_path := args.component_descriptor_path:
+        component_descriptor = ocm.ComponentDescriptor.from_dict(
+            component_descriptor_dict=ci.util.parse_yaml_file(component_descriptor_path),
+        )
+    else:
+        component_descriptor = lookup(ocm.ComponentIdentity(
+            name='ocm.software/ocm-gear',
+            version=ocm_gear_version(),
+        ))
 
     tuple(
         ctt.process_dependencies.process_images(
