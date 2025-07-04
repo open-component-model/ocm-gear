@@ -27,20 +27,26 @@ def parse_args():
         required=False,
         help='Path to the component descriptor YAML file.',
     )
+    parser.add_argument(
+        '--processing-mode',
+        required=False,
+        default=ctt.process_dependencies.ProcessingMode.REGULAR,
+        type=ctt.process_dependencies.ProcessingMode,
+        help='Influences whether OCI resources are actually being replicated.',
+    )
     return parser.parse_args()
 
 
 def ocm_gear_version() -> str:
-    effective_version = os.environ.get('EFFECTIVE_VERSION')
-
-    if effective_version and version_mod.is_final(effective_version):
-        return effective_version
-
     version_file = os.path.join(repo_root, 'VERSION')
     with open(version_file, 'r') as file:
         version = file.read().strip()
 
     parsed_version = version_mod.parse_to_semver(version)
+
+    if version_mod.is_final(parsed_version):
+        return str(parsed_version)
+
     parsed_version = parsed_version.replace(prerelease=None)
 
     if parsed_version.patch:
@@ -81,6 +87,7 @@ def main():
             processing_cfg_path=os.path.join(repo_root, 'processing.cfg'),
             root_component_descriptor=component_descriptor,
             component_descriptor_lookup=lookup,
+            processing_mode=args.processing_mode,
             inject_ocm_coordinates_into_oci_manifests=True,
             oci_client=oci_client,
             tgt_ocm_repo_path=tgt_ocm_repo_path,

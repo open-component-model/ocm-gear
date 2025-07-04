@@ -1,0 +1,26 @@
+name: Replicate
+
+inputs:
+  mode:
+    required: false
+    type: choice
+    default: regular
+    options:
+      - regular
+      - dry_run
+    description: |
+      Influences whether OCI resources are actually being replicated.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+    - uses: gardener/cc-utils/.github/actions/install-gardener-gha-libs@master
+    - uses: gardener/cc-utils/.github/actions/oci-auth@master
+    - name: replicate
+      shell: bash
+      run: |
+        set -eu
+
+        "${GITHUB_ACTION_PATH}/replicate.py" \
+          --processing-mode="${{ inputs.mode }}"

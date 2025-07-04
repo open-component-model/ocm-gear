@@ -1,0 +1,35 @@
+name: Replicate
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        required: true
+        type: choice
+        options:
+          - regular
+          - dry_run
+        description: |
+          Influences whether OCI resources are actually being replicated.
+  workflow_call:
+    inputs:
+      mode:
+        required: false
+        default: regular
+        type: string
+        description: |
+          Influences whether OCI resources are actually being replicated. Allowed values are:
+            - regular
+            - dry_run
+
+jobs:
+  replicate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: replicate
+        uses: ./.github/actions/replicate
+        with:
+          mode: ${{ inputs.mode }}

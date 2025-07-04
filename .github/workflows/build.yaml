@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      mode:
+        required: true
+        type: string
+        default: snapshot
+        description: |
+          the mode to use. either `snapshot` or `release`. Will affect effective version, as well
+          as target-oci-registry.
+
+jobs:
+  prepare:
+    uses: gardener/cc-utils/.github/workflows/prepare.yaml@master
+    permissions:
+      contents: read
+    with:
+      mode: ${{ inputs.mode }}
+
+  installation-resource:
+    name: Add Installation Resource
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+    permissions:
+      contents: read
+    steps:
+    - uses: actions/checkout@v4
+    - name: prepare
+      run: |
+        blobs_dir=blobs.d
+        mkdir $blobs_dir
+
+        tar czf ${blobs_dir}/installation.tar.gz installation
+    - uses: gardener/cc-utils/.github/actions/export-ocm-fragments@master
+      with:
+        ocm-resources: |
+          name: installation
+          relation: local
+          access:
+            type: localBlob
+            localReference: installation.tar.gz
+        blobs-directory: blobs.d

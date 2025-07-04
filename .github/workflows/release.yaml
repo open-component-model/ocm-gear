@@ -1,0 +1,37 @@
+name: Release
+on:
+  workflow_dispatch:
+    inputs:
+      next-version:
+        type: choice
+        options:
+          - bump-minor
+          - bump-patch
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yaml
+    permissions:
+      contents: read
+    with:
+      mode: release
+
+  release-to-github-and-bump:
+    uses: gardener/cc-utils/.github/workflows/release.yaml@master
+    needs:
+      - build
+    secrets: inherit
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    with:
+      release-commit-target: branch
+      next-version: ${{ inputs.next-version }}
+
+  replicate:
+    uses: ./.github/workflows/replicate.yaml
+    needs:
+      - release-to-github-and-bump
+    permissions:
+      contents: read
