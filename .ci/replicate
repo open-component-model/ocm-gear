@@ -40,7 +40,17 @@ def ocm_gear_version() -> str:
     with open(version_file, 'r') as file:
         version = file.read().strip()
 
-    return version.split('-')[0]
+    parsed_version = version_mod.parse_to_semver(version)
+    parsed_version = parsed_version.replace(prerelease=None)
+
+    if parsed_version.patch:
+        parsed_version = parsed_version.replace(patch=parsed_version.patch - 1)
+    elif parsed_version.minor:
+        parsed_version = parsed_version.replace(minor=parsed_version.minor - 1)
+    elif parsed_version.major:
+        parsed_version = parsed_version.replace(major=parsed_version.major - 1)
+
+    return str(parsed_version)
 
 
 def main():
