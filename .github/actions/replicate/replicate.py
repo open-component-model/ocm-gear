@@ -4,11 +4,12 @@ import argparse
 import logging
 import os
 
-import ccc.oci
 import ci.log
 import ci.util
 import cnudie.retrieve
 import ctt.process_dependencies
+import oci.auth
+import oci.client
 import ocm
 import version as version_mod
 
@@ -65,7 +66,9 @@ def main():
     source_repo = 'europe-docker.pkg.dev/gardener-project/releases'
     tgt_ocm_repo_path = 'releases/odg'
 
-    oci_client = ccc.oci.oci_client()
+    oci_client = oci.client.Client(
+        credentials_lookup=oci.auth.docker_credentials_lookup(),
+    )
 
     lookup = cnudie.retrieve.create_default_component_descriptor_lookup(
         ocm_repository_lookup=cnudie.retrieve.ocm_repository_lookup(source_repo),
