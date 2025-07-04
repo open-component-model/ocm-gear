@@ -31,3 +31,13 @@ ocm-gear:
         release:
           nextversion: bump_minor
           release_notes_policy: disabled
+
+    manual-replication:
+      repo:
+        trigger: false
+      steps:
+        replicate: ~
+      traits:
+        version: ~
+        component_descriptor:
+          ocm_repository: europe-docker.pkg.dev/gardener-project/snapshots
