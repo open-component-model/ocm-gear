@@ -18,7 +18,7 @@ ci.log.configure_default_logging()
 logger = logging.getLogger(__name__)
 
 own_dir = os.path.abspath(os.path.dirname(__file__))
-repo_root = os.path.abspath(os.path.join(own_dir, os.pardir))
+repo_root = os.path.abspath(os.path.join(own_dir, os.pardir, os.pardir, os.pardir))
 
 
 def parse_args():
