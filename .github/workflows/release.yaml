@@ -35,3 +35,4 @@ jobs:
       - release-to-github-and-bump
     permissions:
       contents: read
+      id-token: write
