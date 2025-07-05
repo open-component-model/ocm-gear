@@ -123,3 +123,16 @@ if [[ $due_date ]]; then
   PGPASSWORD=${PGPASSWORD} \
     psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_8.sql
 fi
+
+stale_severity=$(PGPASSWORD=${PGPASSWORD} psql \
+  -h $HOST \
+  -p $PORT \
+  -d $DATABASE \
+  -U $PGUSER \
+  -t \
+  -c "SELECT data->>'severity' FROM artefact_metadata WHERE type = 'finding/osid' AND data->>'severity' IN ('more-than-one-patchlevel-behind', 'one-patchlevel-behind') LIMIT 1;" | xargs)
+
+if [[ $stale_severity ]]; then
+  PGPASSWORD=${PGPASSWORD} \
+    psql -h $HOST -p $PORT -d $DATABASE -U $PGUSER -a -f ${own_dir}/_migrate_9.sql
+fi
