@@ -4,7 +4,7 @@ componentReferences:
   version: 0.398.0
 - componentName: ocm.software/ocm-gear/delivery-service
   name: delivery-service
-  version: 0.1186.0
+  version: 0.1187.0
 - componentName: ocm.software/ocm-gear/delivery-database
   name: delivery-database
   version: 0.7.0
@@ -21,8 +21,10 @@ main-source:
   labels:
   - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
     value:
-      comment: |
-        this repository does not contain source code, but only build descriptions and code relevant during deployment.
+      comment: 'this repository does not contain source code, but only build descriptions
+        and code relevant during deployment.
+
+        '
       policy: skip
 name: ocm.software/ocm-gear
 resources:
