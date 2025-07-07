@@ -1,42 +1,44 @@
-name: ocm.software/ocm-gear
 componentReferences:
-  - componentName: ocm.software/ocm-gear/delivery-dashboard
-    name: delivery-dashboard
-    version: 0.398.0
-  - componentName: ocm.software/ocm-gear/delivery-service
-    name: delivery-service
-    version: 0.1185.0
-  - componentName: ocm.software/ocm-gear/delivery-database
-    name: delivery-database
-    version: 0.7.0
-  - componentName: ocm.software/ocm-gear/prometheus
-    name: prometheus
-    version: 0.13.0
-resources:
-  - name: nginx-ingress-controller
-    version: 11.6.25
-    type: helmChart/v1
-    access:
-      type: ociRegistry
-      imageReference: registry-1.docker.io/bitnamicharts/nginx-ingress-controller:11.6.25
-    relation: external
-  - name: nginx-ingress-controller
-    version: 1.12.3-debian-12-r2
-    type: ociImage
-    access:
-      type: ociRegistry
-      imageReference: registry-1.docker.io/bitnami/nginx-ingress-controller:1.12.3-debian-12-r2
-    relation: external
+- componentName: ocm.software/ocm-gear/delivery-dashboard
+  name: delivery-dashboard
+  version: 0.398.0
+- componentName: ocm.software/ocm-gear/delivery-service
+  name: delivery-service
+  version: 0.1186.0
+- componentName: ocm.software/ocm-gear/delivery-database
+  name: delivery-database
+  version: 0.7.0
+- componentName: ocm.software/ocm-gear/prometheus
+  name: prometheus
+  version: 0.13.0
 labels:
-  - name: cloud.gardener.cnudie/responsibles
-    value:
-      - type: githubTeam
-        github_hostname: github.com
-        teamname: open-component-model/odg-maintainers
+- name: cloud.gardener.cnudie/responsibles
+  value:
+  - github_hostname: github.com
+    teamname: open-component-model/odg-maintainers
+    type: githubTeam
 main-source:
   labels:
-    - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
-      value:
-        policy: skip
-        comment: |
-          this repository does not contain source code, but only build descriptions and code relevant during deployment.
+  - name: cloud.gardener.cnudie/dso/scanning-hints/source_analysis/v1
+    value:
+      comment: 'this repository does not contain source code, but only build descriptions
+        and code relevant during deployment.
+
+        '
+      policy: skip
+name: ocm.software/ocm-gear
+resources:
+- access:
+    imageReference: registry-1.docker.io/bitnamicharts/nginx-ingress-controller:11.6.25
+    type: ociRegistry
+  name: nginx-ingress-controller
+  relation: external
+  type: helmChart/v1
+  version: 11.6.25
+- access:
+    imageReference: registry-1.docker.io/bitnami/nginx-ingress-controller:1.12.3-debian-12-r2
+    type: ociRegistry
+  name: nginx-ingress-controller
+  relation: external
+  type: ociImage
+  version: 1.12.3-debian-12-r2
