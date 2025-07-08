@@ -1,0 +1,61 @@
+name: nginx-ingress-controller
+installation:
+  ocm_references:
+    - helm_chart_name: nginx-ingress-controller
+      name: ocm.software/ocm-gear
+      version: 0.929.0-dev
+      artefact:
+        name: nginx-ingress-controller
+        version: 11.6.25
+      mappings: []
+  value_templates:
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: namespaceOverride
+      value: ${target_namespace}
+      value_type: python-string-template
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: metrics.enabled
+      value: True
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: podAnnotations."prometheus.io/scrape"
+      value: '"true"'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: podAnnotations."prometheus.io/port"
+      value: '"10254"'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: fullnameOverride
+      value: nginx-ingress-controller
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: image.registry
+      value: 'europe-docker.pkg.dev/gardener-project/snapshots'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: image.repository
+      value: 'odg/nginx-ingress-controller'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: image.tag
+      value: '1.12.3-debian-12-r2'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: global.security.allowInsecureImages
+      value: True
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: publishService.enabled
+      value: True # propagate external loadbalancer IP to ingress status (required by shoot-dns-extension)
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: publishService.pathOverride
+      value: '${target_namespace}/nginx-ingress-controller'
+      value_type: python-string-template
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: defaultBackend.enabled
+      value: False
+      value_type: literal
+outputs: []
+dependencies: []
