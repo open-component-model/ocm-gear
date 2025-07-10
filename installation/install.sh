@@ -147,6 +147,19 @@ else
   echo ">>> Found existing helm values directory ${VALUES_DIR}, will not generate helm values"
 fi
 
+echo ">>> Patching image references in Helm values"
+COMPONENT_IDS=$(echo "${COMPONENT_DESCRIPTORS}" | yq eval -N '.component.name + ":" + .component.version')
+
+for component in ${COMPONENT_IDS}; do
+  component_name="${component%%:*}"                # Strip version suffix
+  component_basename="${component_name##*/}"       # Extract base name (e.g. delivery-service)
+
+  python3 ${OWN_DIR}/patch_helm_values.py \
+    --component "${component}" \
+    --values-file "${VALUES_DIR}/values-${component_basename}.yaml" \
+    --ocm-repo "${OCM_REPO}"
+done
+
 if [ -n "${INSTALL_INGRESS_CONTROLLER}" ]; then
   echo ">>> Creating namespace ${INGRESS_NAMESPACE}"
   kubectl create ns ${INGRESS_NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
