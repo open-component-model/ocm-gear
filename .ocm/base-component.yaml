@@ -1,7 +1,7 @@
 componentReferences:
 - componentName: ocm.software/ocm-gear/delivery-dashboard
   name: delivery-dashboard
-  version: 0.398.0
+  version: 0.399.0
 - componentName: ocm.software/ocm-gear/delivery-service
   name: delivery-service
   version: 0.1189.0
