@@ -58,7 +58,7 @@ if ! which ocm 1>/dev/null; then
   echo ">>> Installed OCM cli in version $(ocm version)"
 fi
 
-OCM_GEAR_COMPONENT_REF="europe-docker.pkg.dev/gardener-project/releases//ocm.software/ocm-gear"
+OCM_GEAR_COMPONENT_REF="europe-docker.pkg.dev/gardener-project/releases/odg//ocm.software/ocm-gear"
 OCM_GEAR_VERSION="${OCM_GEAR_VERSION:-$(ocm show versions ${OCM_GEAR_COMPONENT_REF} | tail -1)}"
 
 echo ">>> Installing OCM-Gear in version ${OCM_GEAR_VERSION}"

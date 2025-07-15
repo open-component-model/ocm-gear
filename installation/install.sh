@@ -96,7 +96,7 @@ if ! which kubectl 1>/dev/null; then
 fi
 
 echo ">>> Retrieving OCM component descriptors"
-OCM_REPO="europe-docker.pkg.dev/gardener-project/releases"
+OCM_REPO="europe-docker.pkg.dev/gardener-project/releases/odg"
 OCM_GEAR_COMPONENT="ocm.software/ocm-gear"
 OCM_GEAR_COMPONENT_REF="${OCM_REPO}//${OCM_GEAR_COMPONENT}"
 OCM_GEAR_VERSION="${OCM_GEAR_VERSION:-$(ocm show versions ${OCM_GEAR_COMPONENT_REF} | tail -1)}"
