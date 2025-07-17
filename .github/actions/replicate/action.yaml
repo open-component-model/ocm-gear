@@ -16,7 +16,7 @@ runs:
   steps:
     - uses: actions/checkout@v4
       with:
-        ref: refs/heads/main # don't necessarily use ref that triggered this action (e.g. after release)
+        ref: ${{ github.ref }} # don't necessarily use ref that triggered this action (e.g. after release)
     - uses: gardener/cc-utils/.github/actions/install-gardener-gha-libs@master
     - uses: gardener/cc-utils/.github/actions/oci-auth@master
     - name: replicate
