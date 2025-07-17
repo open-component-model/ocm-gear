@@ -32,7 +32,7 @@ jobs:
         mkdir $blobs_dir
         extension_definitions="extension-definitions.yaml"
 
-        yq -i '.installation.ocm_references[].version = strenv(next_version)' "${extension_definitions}"
+        yq -i '.installation.ocm_references[].version = strenv(version)' "${extension_definitions}"
 
         tar czf ${blobs_dir}/extension_definitions.tar.gz ${extension_definitions}
 
