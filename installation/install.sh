@@ -142,6 +142,7 @@ if [ ! -d "${VALUES_DIR}" ]; then
   python3 ${OWN_DIR}/generate_helm_values.py \
     ${CFG_DIR:+"--cfg-dir"} ${CFG_DIR:+${CFG_DIR}} \
     ${CFG_SET:+"--cfg-set"} ${CFG_SET:+${CFG_SET}} \
+    "--odg-extension" "ocm.software/ocm-gear:${OCM_GEAR_VERSION}:odg-extension-definitions" \
     --out-dir ${VALUES_DIR}
 else
   echo ">>> Found existing helm values directory ${VALUES_DIR}, will not generate helm values"
