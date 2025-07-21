@@ -2,6 +2,7 @@
 
 import argparse
 import collections.abc
+import dataclasses
 import json
 import logging
 import os
@@ -89,12 +90,19 @@ def ingress_helm_values(
 
 def bootstrapping_helm_values(
     cfg_set: model.ConfigurationSet,
+    extensions: list[odg.extensions_cfg.ExtensionDefinitionOcmReference],
 ) -> dict:
     findings_raw = cfg_set.findings_cfg().raw.get('findings', [])
     odg.findings.Finding.from_dict(findings_raw) # validate model classes
 
     extensions_cfg_raw = cfg_set.extensions_cfg().raw
     odg.extensions_cfg.ExtensionsConfiguration.from_dict(dict(extensions_cfg_raw)) # validate model classes
+
+    extensions_cfg = odg.extensions_cfg.ExtensionsConfiguration.from_dict(extensions_cfg_raw)
+    if extensions_cfg.odg_operator:
+        extensions_cfg_raw['odg_operator']['extension_ocm_references'] = [
+            dataclasses.asdict(extension) for extension in extensions
+        ]
 
     # dirty: Parse referenced cfg set to a dictionary representation to create a cfg factory from it
     cfg_factory = model.ConfigFactory.from_dict(json.loads(model.ConfigSetSerialiser(
@@ -286,6 +294,15 @@ def parse_args():
         default=os.path.join(own_dir, 'helm-values'),
     )
     parser.add_argument(
+        '--odg-extension',
+        dest='extensions',
+        action='append',
+        default=[],
+        help='ocm references to retrieve odg extension definitions from. \
+            can be specified multiple times, \
+            expected format: <component-name>:<component-version>:<artefact-name>'
+    )
+    parser.add_argument(
         '--modg',
         default=False,
         required=False,
@@ -303,6 +320,7 @@ def main():
     cfg_set_name = parsed_arguments.cfg_set
     out_dir = parsed_arguments.out_dir
     modg = parsed_arguments.modg
+    extensions = parsed_arguments.extensions
 
     if cfg_dir:
         cfg_factory = model.ConfigFactory.from_cfg_dir(cfg_dir)
@@ -319,6 +337,14 @@ def main():
     write_values_to_file(
         helm_values=bootstrapping_helm_values(
             cfg_set=cfg_set,
+            extensions=[
+                odg.extensions_cfg.ExtensionDefinitionOcmReference(
+                    component_name=extension[0],
+                    component_version=extension[1],
+                    artefact_name=extension[2],
+                )
+                for extension in [e.split(':') for e in extensions]
+            ]
         ),
         out_file=os.path.join(out_dir, 'values-bootstrapping.yaml'),
     )
