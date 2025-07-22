@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import logging
+import os
+
 import yaml
 
+import ci.log
 import oci.client
 import cnudie.retrieve
 import ocm
@@ -12,6 +14,7 @@ import ocm.helm
 
 
 logger = logging.getLogger(__name__)
+ci.log.configure_default_logging()
 
 
 def main():
