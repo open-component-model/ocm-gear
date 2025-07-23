@@ -7,7 +7,10 @@ installation:
       artefact:
         name: nginx-ingress-controller
         version: 11.6.25
-      mappings: []
+      mappings:
+        - name: nginx-ingress-controller
+          version: 0.953.0-dev
+          artefact_type: helmchart-imagemap
   value_templates:
     - helm_chart_name: nginx-ingress-controller
       helm_attribute: namespaceOverride
@@ -31,15 +34,7 @@ installation:
       value_type: literal
     - helm_chart_name: nginx-ingress-controller
       helm_attribute: image.registry
-      value: 'europe-docker.pkg.dev/gardener-project/snapshots'
-      value_type: literal
-    - helm_chart_name: nginx-ingress-controller
-      helm_attribute: image.repository
-      value: 'odg/nginx-ingress-controller'
-      value_type: literal
-    - helm_chart_name: nginx-ingress-controller
-      helm_attribute: image.tag
-      value: '1.12.3-debian-12-r2'
+      value: '' # required to use repository + tag from image-mapping only
       value_type: literal
     - helm_chart_name: nginx-ingress-controller
       helm_attribute: global.security.allowInsecureImages
