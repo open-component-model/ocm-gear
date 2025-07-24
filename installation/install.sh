@@ -13,6 +13,7 @@ KUBERNETES_CFG_NAME=""
 NAMESPACE=delivery
 OCM_GEAR_VERSION=""
 VALUES_DIR="${OWN_DIR}/helm-values"
+SKIP_WAIT=""
 
 parse_flags() {
   while test $# -gt 0; do
@@ -43,6 +44,9 @@ parse_flags() {
       ;;
     --version)
       shift; OCM_GEAR_VERSION="$1"
+      ;;
+    --skip-wait)
+      SKIP_WAIT=true
       ;;
     esac
 
@@ -172,12 +176,14 @@ if [ -n "${INSTALL_INGRESS_CONTROLLER}" ]; then
     --set controller.metrics.enabled=true \
     --set-string controller.podAnnotations."prometheus\.io/scrape"="true" \
     --set-string controller.podAnnotations."prometheus\.io/port"="10254"
-  echo ">>> Waiting for ingress nginx controller to become ready, this can take up to 90 seconds..."
-  kubectl wait \
-    --namespace ${INGRESS_NAMESPACE} \
-    --for=condition=ready pod \
-    --selector=app.kubernetes.io/component=controller \
-    --timeout=90s
+  if [ -z "${SKIP_WAIT}" ]; then
+    echo ">>> Waiting for ingress nginx controller to become ready, this can take up to 90 seconds..."
+    kubectl wait \
+      --namespace ${INGRESS_NAMESPACE} \
+      --for=condition=ready pod \
+      --selector=app.kubernetes.io/component=controller \
+      --timeout=90s
+  fi
 fi
 
 echo ">>> Installing OCM-Gear components"
@@ -205,10 +211,12 @@ helm upgrade -i delivery-service oci://${DELIVERY_SERVICE_CHART%:*} \
   --namespace ${NAMESPACE} \
   --version ${DELIVERY_SERVICE_CHART#*:} \
   --values ${VALUES_DIR}/values-delivery-service.yaml
-echo ">>> Waiting for delivery-service to become ready, this can take up to 3 minutes..."
-kubectl rollout status deployment delivery-service \
-  --namespace ${NAMESPACE} \
-  --timeout=180s
+if [ -z "${SKIP_WAIT}" ]; then
+  echo ">>> Waiting for delivery-service to become ready, this can take up to 3 minutes..."
+  kubectl rollout status deployment delivery-service \
+    --namespace ${NAMESPACE} \
+    --timeout=180s
+fi
 
 echo ">>> Installing delivery-dashboard from ${DELIVERY_DASHBOARD_CHART}"
 helm upgrade -i delivery-dashboard oci://${DELIVERY_DASHBOARD_CHART%:*} \
