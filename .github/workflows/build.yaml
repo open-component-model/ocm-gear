@@ -62,7 +62,7 @@ jobs:
           set -eu
 
           mkdir blobs.d
-          mv helmchart-imagemap.yaml blobs.d
+          mv helmchart-imagemap.json blobs.d
       - uses: gardener/cc-utils/.github/actions/export-ocm-fragments@master
         with:
           ocm-resources: |
@@ -73,7 +73,7 @@ jobs:
             relation: local
             access:
               type: localBlob
-              localReference: helmchart-imagemap.yaml
+              localReference: helmchart-imagemap.json
           blobs-directory: blobs.d
 
   installation-resource:

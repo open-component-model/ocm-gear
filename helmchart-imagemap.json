@@ -1,0 +1,14 @@
+{
+  "helmchartResource": {
+    "name": "nginx-ingress-controller"
+  },
+  "imageMapping": [
+    {
+      "resource": {
+        "name": "nginx-ingress-controller"
+      },
+      "repository": "image.repository",
+      "tag": "image.tag"
+    }
+  ]
+}
