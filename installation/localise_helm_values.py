@@ -53,6 +53,7 @@ def main():
             resource_version=resource.version,
             resource_extra_id=resource.extraIdentity,
             base_values=base_values,
+            component_descriptor_lookup=lookup,
         )
 
         with open(values_file, 'w') as f:
