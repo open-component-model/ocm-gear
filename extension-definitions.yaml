@@ -52,5 +52,25 @@ installation:
       helm_attribute: defaultBackend.enabled
       value: False
       value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: config.proxy-body-size
+      value: '16m'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: config.proxy-read-timeout
+      value: '"900"'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: config.proxy-next-upstream
+      value: 'error timeout http_503'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: config.proxy-next-upstream-timeout
+      value: '"0"'
+      value_type: literal
+    - helm_chart_name: nginx-ingress-controller
+      helm_attribute: config.proxy-next-upstream-tries
+      value: '"0"'
+      value_type: literal
 outputs: []
 dependencies: []
