@@ -7,7 +7,7 @@ componentReferences:
   version: 0.1201.0
 - componentName: ocm.software/ocm-gear/delivery-database
   name: delivery-database
-  version: 0.13.0
+  version: 0.14.0
 - componentName: ocm.software/ocm-gear/prometheus
   name: prometheus
   version: 0.14.0
