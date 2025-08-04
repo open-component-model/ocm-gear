@@ -3,13 +3,13 @@ installation:
   ocm_references:
     - helm_chart_name: nginx-ingress-controller
       name: ocm.software/ocm-gear
-      version: 0.962.0
+      version: 0.963.0-dev
       artefact:
         name: nginx-ingress-controller
         version: 11.6.25
       mappings:
         - name: nginx-ingress-controller
-          version: 0.962.0
+          version: 0.963.0-dev
           artefact_type: helmchart-imagemap
   value_templates:
     - helm_chart_name: nginx-ingress-controller
