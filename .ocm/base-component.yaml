@@ -4,7 +4,7 @@ componentReferences:
   version: 0.401.0
 - componentName: ocm.software/ocm-gear/delivery-service
   name: delivery-service
-  version: 0.1207.0
+  version: 0.1208.0
 - componentName: ocm.software/ocm-gear/delivery-database
   name: delivery-database
   version: 0.15.0
