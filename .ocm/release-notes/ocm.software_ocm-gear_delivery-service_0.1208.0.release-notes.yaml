@@ -1,0 +1,16 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-service
+  component_version: 0.1208.0
+release_notes:
+- audience: null
+  author: null
+  category: null
+  contents: |-
+    # [ocm-gear/delivery-service]
+
+    ## 🏃 Others
+
+    - `[OPERATOR]` Added `disableDefaultDenyPolicy` Helm value to delivery-service chart by @8R0WNI3 [#527]
+  mimetype: text/markdown
+  pullrequest: null
+  type: prerendered
