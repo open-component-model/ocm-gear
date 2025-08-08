@@ -1,1 +1,3 @@
 usr/lib/x86_64-linux-gnu/libdb-5.3.so
+usr/share/doc/libdb5.3/copyright
+usr/share/lintian/overrides/libdb5.3
