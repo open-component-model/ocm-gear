@@ -1,0 +1,16 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-dashboard
+  component_version: 0.402.0
+release_notes:
+- audience: null
+  author: null
+  category: null
+  contents: |-
+    # [ocm-gear/delivery-dashboard]
+
+    ## 🏃 Others
+
+    - `[USER]` Improved error handling in case of errors during login-flow by @8R0WNI3 [#369]
+  mimetype: text/markdown
+  pullrequest: null
+  type: prerendered
