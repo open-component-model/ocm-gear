@@ -1,0 +1,15 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-service
+  component_version: 0.1214.0
+release_notes:
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: 8R0WNI3
+  category: improvement
+  contents: Sprints can now be configured via template rather than full list of all
+    available sprints
+  mimetype: text/markdown
+  reference: '[#548](https://github.com/open-component-model/delivery-service/pull/548)'
+  type: standard
