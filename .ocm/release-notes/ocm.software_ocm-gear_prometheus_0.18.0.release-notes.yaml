@@ -1,0 +1,14 @@
+ocm:
+  component_name: ocm.software/ocm-gear/prometheus
+  component_version: 0.18.0
+release_notes:
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: 8R0WNI3
+  category: noteworthy
+  contents: The target namespace is included in the Ingress Class name for Prometheus
+  mimetype: text/markdown
+  reference: '[#14](https://github.com/open-component-model/prometheus/pull/14)'
+  type: standard
