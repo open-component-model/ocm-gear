@@ -1,0 +1,14 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-service
+  component_version: 0.1216.0
+release_notes:
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: 8R0WNI3
+  category: noteworthy
+  contents: The target namespace is included in the Ingress Class name for the Delivery-Service
+  mimetype: text/markdown
+  reference: '[#552](https://github.com/open-component-model/delivery-service/pull/552)'
+  type: standard
