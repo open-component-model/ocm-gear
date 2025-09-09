@@ -1,0 +1,15 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-service
+  component_version: 0.1217.0
+release_notes:
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: 8R0WNI3
+  category: improvement
+  contents: Manifests for managed resources are now split into chunks to fit Kubernetes'
+    size limit for secrets
+  mimetype: text/markdown
+  reference: '[#553](https://github.com/open-component-model/delivery-service/pull/553)'
+  type: standard
