@@ -1,0 +1,25 @@
+ocm:
+  component_name: ocm.software/ocm-gear/delivery-service
+  component_version: 0.1220.0
+release_notes:
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: 8R0WNI3
+  category: bugfix
+  contents: Fixed fallback to default RBAC configuration in case custom configuration
+    does not exist
+  mimetype: text/markdown
+  reference: '[#558](https://github.com/open-component-model/delivery-service/pull/558)'
+  type: standard
+- audience: operator
+  author:
+    hostname: github.com
+    type: githubUser
+    username: lsroe
+  category: improvement
+  contents: Add time to odg ressource status
+  mimetype: text/markdown
+  reference: '[#559](https://github.com/open-component-model/delivery-service/pull/559)'
+  type: standard
