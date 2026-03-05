@@ -28,3 +28,5 @@ configuration templates.
 ## Support, Feedback, Questions, ...
 Please [open an issue](https://github.com/open-component-model/ocm-gear/issues/new/choose) and
 we look forward to answer your inquiry.
+
+<p align="center"><img alt="Bundesministerium für Wirtschaft und Energie (BMWE)-EU funding logo" src="https://apeirora.eu/assets/img/BMWK-EU.png" width="400"/></p>
